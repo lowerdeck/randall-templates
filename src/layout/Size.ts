@@ -1,9 +1,6 @@
-import { Vector } from './types'
-
 export class Size {
 
   constructor(width: number, height: number)
-  constructor(xy: Vector)
   constructor(...args: any[]) {
     if (args.length === 2) {
       [this.width, this.height] = args
@@ -16,9 +13,5 @@ export class Size {
 
   public width:  number
   public height: number
-
-  public asVector(): Vector {
-    return [this.width, this.height]
-  }
 
 }

@@ -68,8 +68,6 @@ export class StructureVisitor {
       throw new Error(`Unknown mixin: ${node.name}`)
     }
 
-    console.log("MIXIN", mixin)
-
     // TODO: Arguments?
     return this.visit(mixin.block)
   }

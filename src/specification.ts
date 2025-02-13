@@ -1,4 +1,4 @@
-
+import { isPlainObject } from 'ytil'
 
 export interface GeneratorSpec {
   name: string
@@ -51,7 +51,7 @@ export interface HBox extends ContainerCommon {
 
   padding?: number
   gap?:     number
-  align?:   'top' | 'middle' | 'bottom'
+  align?:   'top' | 'middle' | 'bottom' | 'stretch'
   justify?: 'left' | 'center' | 'right'
 
   box_style?: Record<string, any>
@@ -92,22 +92,23 @@ export interface ComponentLayout {
   top?:    number | ConstraintProp
   bottom?: number | ConstraintProp
 
-  width?:  number | ConstraintProp
-  height?: number | ConstraintProp
+  width?:  number
+  height?: number
 
-  offsetX?: number | ConstraintProp
-  offsetY?: number | ConstraintProp
+  offest?:  [number, number]
+  offsetX?: number
+  offsetY?: number
 
-  flex?:       number | [number, number, number | ConstraintProp | 'auto']
+  flex?:       number | [number, number, number | 'auto']
   flexGrow?:   number
   flexShrink?: number
-  flexBasis?:  number | ConstraintProp | 'auto'
+  flexBasis?:  number | 'auto'
   
-  padding?:       number | ConstraintProp
-  paddingLeft?:   number | ConstraintProp
-  paddingRight?:  number | ConstraintProp
-  paddingTop?:    number | ConstraintProp
-  paddingBottom?: number | ConstraintProp
+  padding?:       number
+  paddingLeft?:   number
+  paddingRight?:  number
+  paddingTop?:    number
+  paddingBottom?: number
 }
 
 export interface StyledComponent {
@@ -122,9 +123,16 @@ export interface BoxStyledComponent {
 // Layout
 
 export interface ConstraintProp {
-  component: string | string[]
-  relprop:   keyof ComponentLayout
-  offset?:   number
+  component:   string
+  relprop:     'left' | 'right' | 'top' | 'bottom'
+  offset?:     number
+  multiplier?: number
+}
+
+export const ConstraintProp = {
+  is(value: number | string | ConstraintProp): value is ConstraintProp {
+    return isPlainObject(value)
+  },
 }
 
 //------

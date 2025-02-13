@@ -1,14 +1,12 @@
 import { isArray } from 'lodash'
-import { ConstraintProp } from '../specification'
+import { Insets } from 'ytil'
 import { Point } from './Point'
 import { Size } from './Size'
-import { Vector } from './types'
 
 export class Rect {
 
   constructor(left: number, top: number, width: number, height: number)
   constructor(origin: Point, size: Size)
-  constructor(origin: Vector, size: Vector)
   constructor(...args: any[]) {
     if (args.length === 4) {
       [
@@ -105,32 +103,25 @@ export class Rect {
     return new Rect(left, top, right - left, bottom - top)
   }
 
-  public inset(inset: number) {
+  public inset(inset: number | Insets) {
+    const insetLeft = typeof inset === 'number' ? inset : inset.left
+    const insetTop = typeof inset === 'number' ? inset : inset.top
+    const insetRight = typeof inset === 'number' ? inset : inset.right
+    const insetBottom = typeof inset === 'number' ? inset : inset.bottom
+
     return new Rect(
-      this.left + inset,
-      this.top + inset,
-      this.width - 2 * inset,
-      this.height - 2 * inset
+      this.left + insetLeft,
+      this.top + insetTop,
+      this.width - insetLeft - insetRight,
+      this.height - insetTop - insetBottom
     )
   }
 
-  public offset(offset: number | Vector | Point) {
+  public offset(offset: number | Point) {
     return new Rect(
       this.origin.offset(offset),
       this.size
     )
-  }
-
-  //------
-  // Anchors
-
-  public constraintValue(prop: ConstraintProp) {
-    switch (prop) {
-    case 'left': return this.left
-    case 'right': return this.right
-    case 'top': return this.top
-    case 'bottom': return this.bottom
-    }
   }
 
 }
