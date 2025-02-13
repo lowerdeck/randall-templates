@@ -1,7 +1,6 @@
 import { Block } from './pug'
 
 export interface TemplateConfig {
-  name:   string
   fps:    number
   width:  number
   height: number

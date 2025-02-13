@@ -1,4 +1,4 @@
-import { Vector } from './layout'
+
 
 export interface GeneratorSpec {
   name: string
@@ -22,12 +22,21 @@ export type Container =
   | VBox
   | HBox
 
+export enum ComponentType {
+  Image = 'image',
+  Rectangle = 'rectangle',
+  Text = 'text',
+  Group = 'group',
+  VBox = 'vbox',
+  HBox = 'hbox',
+}
+
 export interface Group extends ContainerCommon {
-  type: 'group'
+  type: ComponentType.Group
 }
 
 export interface VBox extends ContainerCommon {
-  type: 'vbox'
+  type: ComponentType.VBox
 
   padding?: number
   gap?:     number
@@ -38,7 +47,7 @@ export interface VBox extends ContainerCommon {
 }
 
 export interface HBox extends ContainerCommon {
-  type: 'hbox'
+  type: ComponentType.HBox
 
   padding?: number
   gap?:     number
@@ -49,7 +58,7 @@ export interface HBox extends ContainerCommon {
 }
 
 export interface Image extends ComponentCommon, BoxStyledComponent {
-  type:       'image'
+  type:       ComponentType.Image
   filename:   string
   file:       Buffer
   objectFit?: 'scale' | 'cover' | 'contain'
@@ -57,11 +66,11 @@ export interface Image extends ComponentCommon, BoxStyledComponent {
 }
 
 export interface Rectangle extends ComponentCommon, StyledComponent {
-  type: 'rectangle'
+  type: ComponentType.Rectangle
 }
 
 export interface Text extends ComponentCommon, StyledComponent, BoxStyledComponent {
-  type:   'text'
+  type:   ComponentType.Text
   width?: number
   text:   string
 }
@@ -74,21 +83,31 @@ export interface ContainerCommon extends ComponentCommon {
 }
 
 export interface ComponentCommon extends ComponentLayout {
-  id:      string
-  render?: 'preview-only' | 'generator-only' | 'both'
+  id?: string
 }
 
 export interface ComponentLayout {
-  origin?:      Vector
-  constraints?: ComponentLayoutConstraint[]
+  left?:   number | ConstraintProp
+  right?:  number | ConstraintProp
+  top?:    number | ConstraintProp
+  bottom?: number | ConstraintProp
 
-  size?:    Vector
-  width?:   number
-  height?:  number
-  flex?:    number | [number, number]
-  padding?: number
+  width?:  number | ConstraintProp
+  height?: number | ConstraintProp
 
-  offset?: [number, number]
+  offsetX?: number | ConstraintProp
+  offsetY?: number | ConstraintProp
+
+  flex?:       number | [number, number, number | ConstraintProp | 'auto']
+  flexGrow?:   number
+  flexShrink?: number
+  flexBasis?:  number | ConstraintProp | 'auto'
+  
+  padding?:       number | ConstraintProp
+  paddingLeft?:   number | ConstraintProp
+  paddingRight?:  number | ConstraintProp
+  paddingTop?:    number | ConstraintProp
+  paddingBottom?: number | ConstraintProp
 }
 
 export interface StyledComponent {
@@ -102,14 +121,11 @@ export interface BoxStyledComponent {
 //------
 // Layout
 
-export interface ComponentLayoutConstraint {
+export interface ConstraintProp {
   component: string | string[]
-  ownprop:   ConstraintProp
-  relprop:   ConstraintProp
+  relprop:   keyof ComponentLayout
   offset?:   number
 }
-
-export type ConstraintProp = 'left' | 'right' | 'top' | 'bottom'
 
 //------
 // Transitions

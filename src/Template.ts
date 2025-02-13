@@ -69,7 +69,7 @@ export interface TemplateSerialized {
 }
 
 export interface BuildDelegate {
-  get:           (name: string) => any
+  data:          Record<string, any>
   resolveOutlet: (outlet: string) => string | null
 }
 
