@@ -59,8 +59,7 @@ export interface HBox extends ContainerCommon {
 
 export interface Image extends ComponentCommon, BoxStyledComponent {
   type:       ComponentType.Image
-  filename:   string
-  file:       Buffer
+  image:      Buffer
   objectFit?: 'scale' | 'cover' | 'contain'
   mask?:      'rectangle' | 'circle'
 }
@@ -87,6 +86,7 @@ export interface ComponentCommon extends ComponentLayout {
 }
 
 export interface ComponentLayout {
+  inset?:  number
   left?:   number | ConstraintProp
   right?:  number | ConstraintProp
   top?:    number | ConstraintProp
@@ -95,7 +95,7 @@ export interface ComponentLayout {
   width?:  number
   height?: number
 
-  offest?:  [number, number]
+  offset?:  [number, number]
   offsetX?: number
   offsetY?: number
 
@@ -130,7 +130,7 @@ export interface ConstraintProp {
 }
 
 export const ConstraintProp = {
-  is(value: number | string | ConstraintProp): value is ConstraintProp {
+  is(value: number | string | null | ConstraintProp): value is ConstraintProp {
     return isPlainObject(value)
   },
 }

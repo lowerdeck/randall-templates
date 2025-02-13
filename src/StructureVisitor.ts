@@ -1,19 +1,22 @@
-import { EvalAstFactory, parse } from 'jexpr'
-import { EnumUtil, sparse, splitArray } from 'ytil'
-import { BuildDelegate } from './Template'
+import { EnumUtil, objectKeys, objectValues, sparse, splitArray } from 'ytil'
 import { Component, ComponentType } from './specification'
 import { AstNode, Block, Conditional, Mixin, Tag } from './types/pug'
 
 export class StructureVisitor {
 
   constructor(
-    private readonly delegate: BuildDelegate,
+    private readonly vars: Record<string, any> = {},
   ) {}
 
   private mixins: Record<string, Mixin> = {}
 
   public walk(node: Block): Component {
-    return this.visit(node) as Component
+    const root = this.visit(node) as Component[]
+    return {
+      type:     ComponentType.Group,
+      children: this.visit(node) as Component[],
+    }
+
   }
 
   private visit(node: AstNode): any {
@@ -27,16 +30,13 @@ export class StructureVisitor {
     return method.call(this, node)
   }
 
-  protected visit_Block(block: Block): Component {
+  protected visit_Block(block: Block): Component[] {
     // First visit all mixins.
     const [mixins, rest] = splitArray(block.nodes, it => it.type === 'Mixin' && !it.call)
     mixins.forEach(it => this.visit(it))
 
-    // Then visit the rest.
-    return {
-      type:     ComponentType.Group,
-      children: sparse(rest.map(it => this.visit(it))),
-    }
+    const components = rest.flatMap(it => this.visit(it) as Component | Component[] | null)
+    return sparse(components)
   }
 
   protected visit_Tag(tag: Tag): Component {
@@ -46,11 +46,13 @@ export class StructureVisitor {
     }
 
     const {id, ...attrs} = this.extractTagAttrs(type, tag)
+    const children = this.visit(tag.block)
+
     return {
       type,
       id,
       ...attrs,
-      children: sparse(tag.block.nodes.map(it => this.visit(it))),
+      children,
     } as Component
   }
 
@@ -88,9 +90,9 @@ export class StructureVisitor {
   private extractTagAttrs(type: ComponentType, tag: Tag): any {
     const attrs: Record<string, any> = {}
     for (const name of this.attrNames(type)) {
-      const attr = tag.attrs.find(it => it.name)
+      const attr = tag.attrs.find(it => it.name === name)
       if (attr == null) { continue }
-      
+
       attrs[name] = this.transformAttr(type, name, attr.val)
     }
     return attrs
@@ -114,26 +116,55 @@ export class StructureVisitor {
 
   // #region Expressions
 
-  private evaluateExpression(value: string) {
-    const expression = parse(value, new EvalAstFactory())
-    if (expression == null) {
-      throw new Error(`Failed to parse expression: ${value}`)
+  private evaluateExpression(source: string) {
+    try {
+      const fn = new Function(...objectKeys(this.vars), `
+        return (${source});
+      `)
+      return fn(...objectValues(this.vars))
+    } catch (error) {
+      throw new Error(`Error while parsing "${source}": ${error}`)
     }
-    return expression.evaluate(this.delegate.data)
   }
 
   // #endregion
 
 }
 
-const COMMON_KEYS = ['id']
+const COMMON_KEYS = [
+  'id',
+  'inset',
+  'left',
+  'right',
+  'top',
+  'bottom',
+
+  'width',
+  'height',
+
+  'offset',
+  'offsetX',
+  'offsetY',
+
+  'flex',
+  'flexGrow',
+  'flexShrink',
+  'flexBasis',
+  
+  'padding',
+  'paddingLeft',
+  'paddingRight',
+  'paddingTop',
+  'paddingBottom',
+]
+
 const CONTAINER_TYPES = [ComponentType.Group, ComponentType.VBox, ComponentType.HBox]
 const CONTAINER_KEYS = ['children']
 const COMPONENT_KEYS = {
   [ComponentType.Group]:     [],
   [ComponentType.VBox]:      ['padding', 'gap', 'align', 'justify', 'box_style'],
   [ComponentType.HBox]:      ['padding', 'gap', 'align', 'justify', 'box_style'],
-  [ComponentType.Image]:     ['file', 'objectFit', 'mask', 'box_style'],
+  [ComponentType.Image]:     ['image', 'objectFit', 'mask', 'box_style'],
   [ComponentType.Text]:      ['text', 'style', 'box_style'],
   [ComponentType.Rectangle]: ['box_style'],
 }

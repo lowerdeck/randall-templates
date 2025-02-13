@@ -15,11 +15,11 @@ export class Template {
     public readonly phases: TemplatePhase,
   ) {}
 
-  public build(name: string, delegate: BuildDelegate): GeneratorSpec[] {
+  public build(name: string, vars: Record<string, any>): GeneratorSpec[] {
     const specifications: GeneratorSpec[] = []
 
-    const root = this.resolveRoot(delegate)
-    const phases = this.resolvePhases(delegate)
+    const root = this.resolveRoot(vars)
+    const phases = this.resolvePhases(vars)
 
     for (const [index, transitions] of phases.entries()) {
       specifications.push({
@@ -38,13 +38,13 @@ export class Template {
     return specifications
   }
 
-  private resolveRoot(delegate: BuildDelegate): Component {
-    const visitor = new StructureVisitor(delegate)
+  private resolveRoot(vars: Record<string, any>): Component {
+    const visitor = new StructureVisitor(vars)
     return visitor.walk(this.structure)
   }
 
-  private resolvePhases(delegate: BuildDelegate): Transition[][] {
-    const visitor = new PhaseVisitor(delegate)
+  private resolvePhases(vars: Record<string, any>): Transition[][] {
+    const visitor = new PhaseVisitor(vars)
     return visitor.walk(this.phases)
   }
 
@@ -66,11 +66,6 @@ export interface TemplateSerialized {
   variables: TemplateParameter[]
   structure: AstNode
   phases:    AstNode
-}
-
-export interface BuildDelegate {
-  data:          Record<string, any>
-  resolveOutlet: (outlet: string) => string | null
 }
 
 export interface InlineAsset {
