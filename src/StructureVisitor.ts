@@ -1,5 +1,6 @@
 import { EnumUtil, objectKeys, objectValues, sparse, splitArray } from 'ytil'
 import { Component, ComponentType } from './specification'
+import { GeneratorHook, GeneratorHookType } from './types/index'
 import { AstNode, Block, Conditional, Mixin, Tag } from './types/pug'
 
 export class StructureVisitor {
@@ -8,7 +9,8 @@ export class StructureVisitor {
     private readonly vars: Record<string, any> = {},
   ) {}
 
-  private mixins: Record<string, Mixin> = {}
+  private readonly mixins: Record<string, Mixin> = {}
+  public readonly hooks:   GeneratorHook[] = []
 
   public walk(node: Block): Component {
     const root = this.visit(node) as Component[]
@@ -39,7 +41,14 @@ export class StructureVisitor {
     return sparse(components)
   }
 
-  protected visit_Tag(tag: Tag): Component {
+  protected visit_Tag(tag: Tag): Component | null {
+    if (tag.name === 'hook') {
+      return this.visit_Hook(tag)
+    }
+    if (tag.name === 'phase') {
+      return this.visit_Phase(tag)
+    }
+
     const type = tag.name as ComponentType
     if (!EnumUtil.values(ComponentType).includes(type)) {
       throw new Error(`Unknown tag: ${type}`)
@@ -54,6 +63,24 @@ export class StructureVisitor {
       ...attrs,
       children,
     } as Component
+  }
+
+  protected visit_Hook(tag: Tag) {
+    const allowedTypes = EnumUtil.values(GeneratorHookType)
+    if (tag.attrs.length !== 1 || !allowedTypes.includes(tag.attrs[0].name as GeneratorHookType)) {
+      throw new Error(`Invalid hook tag: ${tag.attrs[0].name}. Allowed values: ${allowedTypes.join(', ')}`)
+    }
+
+    const type = tag.attrs[0].name as GeneratorHookType
+    const textNodes = tag.block.nodes.filter(it => it.type === 'Text')
+    const source = textNodes.map(it => it.val).join('')
+
+    this.hooks.push({type, source})
+    return null
+  }
+
+  protected visit_Phase(tag: Tag) {
+    return null
   }
 
   protected visit_Mixin(mixin: Mixin) {
@@ -80,9 +107,13 @@ export class StructureVisitor {
 
   protected visit_Conditional(conditional: Conditional) {
     const matches = this.evaluateExpression(conditional.test)
-    if (!matches) { return null }
-
-    return this.visit(conditional.consequent)
+    if (matches) {
+      return this.visit(conditional.consequent)
+    } else if (conditional.alternate != null) {
+      return this.visit(conditional.alternate)
+    } else {
+      return null
+    }
   }
 
   // #region Attributes
@@ -114,7 +145,7 @@ export class StructureVisitor {
 
   // #endregion
 
-  // #region Expressions
+  // #region Expressions & scripts
 
   private evaluateExpression(source: string) {
     try {

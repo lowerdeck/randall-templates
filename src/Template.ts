@@ -1,8 +1,7 @@
 import { isPlainObject } from 'ytil'
-import { PhaseVisitor } from './PhaseVisitor'
 import { StructureVisitor } from './StructureVisitor'
 import { Component, GeneratorSpec, Transition } from './specification'
-import { TemplateConfig, TemplateParameter, TemplatePhase, TemplateStructure } from './types'
+import { GeneratorHook, TemplateConfig, TemplateParameter, TemplateStructure } from './types'
 import { AstNode } from './types/pug'
 
 export class Template {
@@ -11,15 +10,13 @@ export class Template {
     public readonly id:   string,
     public readonly config: TemplateConfig,
     public readonly params: TemplateParameter[],
-    public readonly structure: TemplateStructure,
-    public readonly phases: TemplatePhase,
+    public readonly structure: TemplateStructure
   ) {}
 
   public build(name: string, vars: Record<string, any>): GeneratorSpec[] {
     const specifications: GeneratorSpec[] = []
 
-    const root = this.resolveRoot(vars)
-    const phases = this.resolvePhases(vars)
+    const [root, hooks, phases] = this.resolveStructure(vars)
 
     for (const [index, transitions] of phases.entries()) {
       specifications.push({
@@ -32,20 +29,18 @@ export class Template {
       
         root:        root,
         transitions: transitions,
+        hooks:       hooks,
       })
     }
 
     return specifications
   }
 
-  private resolveRoot(vars: Record<string, any>): Component {
+  private resolveStructure(vars: Record<string, any>): [Component, GeneratorHook[], Transition[][]] {
     const visitor = new StructureVisitor(vars)
-    return visitor.walk(this.structure)
-  }
-
-  private resolvePhases(vars: Record<string, any>): Transition[][] {
-    const visitor = new PhaseVisitor(vars)
-    return visitor.walk(this.phases)
+    const root = visitor.walk(this.structure)
+    const hooks = visitor.hooks
+    return [root, hooks, [[]]]
   }
 
   public serialize(): TemplateSerialized {
@@ -54,7 +49,6 @@ export class Template {
       config:    this.config,
       variables: this.params,
       structure: this.structure,
-      phases:    this.phases,
     }
   }
 
@@ -65,7 +59,6 @@ export interface TemplateSerialized {
   config:    TemplateConfig
   variables: TemplateParameter[]
   structure: AstNode
-  phases:    AstNode
 }
 
 export interface InlineAsset {

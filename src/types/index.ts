@@ -25,3 +25,14 @@ export enum TemplateVariableType {
 
 export type TemplateStructure = Block
 export type TemplatePhase = Block
+
+export interface GeneratorHook {
+  type:   GeneratorHookType
+  source: string
+}
+
+export enum GeneratorHookType {
+  BeforeLayout = 'before-layout',
+  AfterLayout = 'after-layout',
+  AfterDraw = 'after-draw'
+}
