@@ -1,6 +1,6 @@
 import { isPlainObject } from 'ytil'
 import { StructureVisitor } from './StructureVisitor'
-import { Component, GeneratorSpec, Transition } from './specification'
+import { Component, ConstraintProp, GeneratorSpec, Transition } from './specification'
 import { GeneratorHook, TemplateConfig, TemplateParameter, TemplateStructure } from './types'
 import { AstNode } from './types/pug'
 
@@ -37,10 +37,27 @@ export class Template {
   }
 
   private resolveStructure(vars: Record<string, any>): [Component, GeneratorHook[], Transition[][]] {
-    const visitor = new StructureVisitor(vars)
+    const visitor = new StructureVisitor({
+      ...vars,
+      ...this.helpers,
+    })
     const root = visitor.walk(this.structure)
     const hooks = visitor.hooks
     return [root, hooks, [[]]]
+  }
+
+  private helpers = {
+
+    constraint: (
+      component: string, 
+      relprop: 'left' | 'right' | 'top' | 'bottom', 
+      offset?: number, 
+      multiplier?: number
+    ): ConstraintProp => {
+      return {component, relprop, offset, multiplier}
+    },
+
+
   }
 
   public serialize(): TemplateSerialized {

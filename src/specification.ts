@@ -59,21 +59,23 @@ export interface HBox extends ContainerCommon {
   box_style?: Record<string, any>
 }
 
-export interface Image extends ComponentCommon, BoxStyledComponent {
+export interface Image extends ComponentCommon {
   type:       ComponentType.Image
   image:      Buffer
   objectFit?: 'scale' | 'cover' | 'contain'
   mask?:      'rectangle' | 'circle'
+  box_style?: Record<string, any>
 }
 
-export interface Rectangle extends ComponentCommon, StyledComponent {
+export interface Rectangle extends ComponentCommon {
   type: ComponentType.Rectangle
 }
 
-export interface Text extends ComponentCommon, StyledComponent, BoxStyledComponent {
-  type:   ComponentType.Text
-  width?: number
-  text:   string
+export interface Text extends ComponentCommon {
+  type:       ComponentType.Text
+  width?:     number
+  text:       string
+  box_style?: Record<string, any>
 }
 
 //------
@@ -84,7 +86,8 @@ export interface ContainerCommon extends ComponentCommon {
 }
 
 export interface ComponentCommon extends ComponentLayout {
-  id?: string
+  id?:    string
+  style?: Record<string, any>
 }
 
 export interface ComponentLayout {
@@ -111,14 +114,6 @@ export interface ComponentLayout {
   paddingRight?:  number
   paddingTop?:    number
   paddingBottom?: number
-}
-
-export interface StyledComponent {
-  style?: Record<string, any>
-}
-
-export interface BoxStyledComponent {
-  box_style?: Record<string, any>
 }
 
 //------
