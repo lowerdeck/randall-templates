@@ -188,7 +188,7 @@ export interface Text extends AstNodeCommon {
 export interface Attribute extends AstNodeCommon {
   type:       'Attribute'
   name:       string
-  val:        string
+  val:        string | number | boolean
   mustEscape: boolean
 }
 

@@ -1,4 +1,4 @@
-import { EnumUtil, objectKeys, objectValues, sparse, splitArray } from 'ytil'
+import { EnumUtil, isPlainObject, objectKeys, objectValues, sparse, splitArray } from 'ytil'
 import { Component, ComponentType } from './specification'
 import { GeneratorHook, GeneratorHookType } from './types/index'
 import { AstNode, Block, Conditional, Mixin, Tag } from './types/pug'
@@ -119,14 +119,31 @@ export class StructureVisitor {
   // #region Attributes
 
   private extractTagAttrs(type: ComponentType, tag: Tag): any {
-    const attrs: Record<string, any> = {}
-    for (const name of this.attrNames(type)) {
-      const attr = tag.attrs.find(it => it.name === name)
-      if (attr == null) { continue }
+    const validNames = this.attrNames(type)
 
-      attrs[name] = this.transformAttr(type, name, attr.val)
+    const result: Record<string, any> = {}
+    for (const {name, val} of tag.attrs) {
+      if (name.startsWith('...') && val === true) {
+        // Spread attr, evaluate the variable and merge it into the result.
+        const obj = this.evaluateExpression(name.slice(3))
+        if (!isPlainObject(obj)) {
+          throw new Error(`Invalid spread object: ${name}`)
+        }
+
+        Object.assign(result, obj)
+      } else {
+        result[name] = this.transformAttr(type, name, val)
+      }
     }
-    return attrs
+
+    // Remove unknown attribute values.
+    for (const key of objectKeys(result)) {
+      if (!validNames.includes(key)) {
+        delete result[key]
+      }
+    }
+    
+    return result
   }
 
   private transformAttr(_type: ComponentType, _name: string, value: any) {
@@ -164,6 +181,8 @@ export class StructureVisitor {
 
 const COMMON_KEYS = [
   'id',
+  'style',
+
   'inset',
   'left',
   'right',
