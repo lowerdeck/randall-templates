@@ -1,5 +1,5 @@
 import { EnumUtil, isPlainObject, objectKeys, objectValues, sparse, splitArray } from 'ytil'
-import { Component, ComponentType } from './specification'
+import { ComponentSpec, ComponentType } from './specification'
 import { GeneratorHook, GeneratorHookType } from './types/index'
 import { AstNode, Block, Conditional, Mixin, Tag } from './types/pug'
 
@@ -12,11 +12,11 @@ export class StructureVisitor {
   private readonly mixins: Record<string, Mixin> = {}
   public readonly hooks:   GeneratorHook[] = []
 
-  public walk(node: Block): Component {
-    const root = this.visit(node) as Component[]
+  public walk(node: Block): ComponentSpec {
+    const root = this.visit(node) as ComponentSpec[]
     return {
       type:     ComponentType.Group,
-      children: this.visit(node) as Component[],
+      children: this.visit(node) as ComponentSpec[],
     }
 
   }
@@ -32,16 +32,16 @@ export class StructureVisitor {
     return method.call(this, node)
   }
 
-  protected visit_Block(block: Block): Component[] {
+  protected visit_Block(block: Block): ComponentSpec[] {
     // First visit all mixins.
     const [mixins, rest] = splitArray(block.nodes, it => it.type === 'Mixin' && !it.call)
     mixins.forEach(it => this.visit(it))
 
-    const components = rest.flatMap(it => this.visit(it) as Component | Component[] | null)
+    const components = rest.flatMap(it => this.visit(it) as ComponentSpec | ComponentSpec[] | null)
     return sparse(components)
   }
 
-  protected visit_Tag(tag: Tag): Component | null {
+  protected visit_Tag(tag: Tag): ComponentSpec | null {
     if (tag.name === 'hook') {
       return this.visit_Hook(tag)
     }
@@ -62,7 +62,7 @@ export class StructureVisitor {
       id,
       ...attrs,
       children,
-    } as Component
+    } as ComponentSpec
   }
 
   protected visit_Hook(tag: Tag) {
@@ -79,7 +79,7 @@ export class StructureVisitor {
     return null
   }
 
-  protected visit_Phase(tag: Tag) {
+  protected visit_Phase(_tag: Tag) {
     return null
   }
 

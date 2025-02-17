@@ -8,21 +8,21 @@ export interface GeneratorSpec {
   height: number
   fps:    number
 
-  root:        Component
+  root:        ComponentSpec
   transitions: Transition[]
   hooks:       GeneratorHook[]
 }
 
-export type Component =
-  | Image
-  | Rectangle
-  | Text
-  | Container
+export type ComponentSpec =
+  | ImageSpec
+  | RectangleSpec
+  | TextSpec
+  | ContainerSpec
 
-export type Container =
-  | Group
-  | VBox
-  | HBox
+export type ContainerSpec =
+  | GroupSpec
+  | VBoxSpec
+  | HBoxSpec
 
 export enum ComponentType {
   Image = 'image',
@@ -33,11 +33,11 @@ export enum ComponentType {
   HBox = 'hbox',
 }
 
-export interface Group extends ContainerCommon {
+export interface GroupSpec extends ContainerSpecCommon {
   type: ComponentType.Group
 }
 
-export interface VBox extends ContainerCommon {
+export interface VBoxSpec extends ContainerSpecCommon {
   type: ComponentType.VBox
 
   padding?: number
@@ -48,7 +48,7 @@ export interface VBox extends ContainerCommon {
   box_style?: Record<string, any>
 }
 
-export interface HBox extends ContainerCommon {
+export interface HBoxSpec extends ContainerSpecCommon {
   type: ComponentType.HBox
 
   padding?: number
@@ -59,7 +59,7 @@ export interface HBox extends ContainerCommon {
   box_style?: Record<string, any>
 }
 
-export interface Image extends ComponentCommon {
+export interface ImageSpec extends ComponentSpecCommon {
   type:       ComponentType.Image
   image:      Buffer
   objectFit?: 'scale' | 'cover' | 'contain'
@@ -67,11 +67,11 @@ export interface Image extends ComponentCommon {
   box_style?: Record<string, any>
 }
 
-export interface Rectangle extends ComponentCommon {
+export interface RectangleSpec extends ComponentSpecCommon {
   type: ComponentType.Rectangle
 }
 
-export interface Text extends ComponentCommon {
+export interface TextSpec extends ComponentSpecCommon {
   type:       ComponentType.Text
   width?:     number
   text:       string
@@ -81,34 +81,34 @@ export interface Text extends ComponentCommon {
 //------
 // Common props
 
-export interface ContainerCommon extends ComponentCommon {
-  children?: Component[]
+export interface ContainerSpecCommon extends ComponentSpecCommon {
+  children?: ComponentSpec[]
 }
 
-export interface ComponentCommon extends ComponentLayout {
+export interface ComponentSpecCommon extends ComponentLayoutSpec {
   id?:    string
   style?: Record<string, any>
 }
 
-export interface ComponentLayout {
+export interface ComponentLayoutSpec {
   inset?:  number
-  left?:   number | ConstraintProp
-  right?:  number | ConstraintProp
-  top?:    number | ConstraintProp
-  bottom?: number | ConstraintProp
-
-  width?:  number
-  height?: number
-
+  left?:   number | Constraint
+  right?:  number | Constraint
+  top?:    number | Constraint
+  bottom?: number | Constraint
+  
   offset?:  [number, number]
   offsetX?: number
   offsetY?: number
+
+  width?:  number
+  height?: number
 
   flex?:       number | [number, number, number | 'auto']
   flexGrow?:   number
   flexShrink?: number
   flexBasis?:  number | 'auto'
-  
+
   padding?:       number
   paddingLeft?:   number
   paddingRight?:  number
@@ -119,18 +119,20 @@ export interface ComponentLayout {
 //------
 // Layout
 
-export interface ConstraintProp {
+export interface Constraint {
   component:   string
-  relprop:     'left' | 'right' | 'top' | 'bottom'
+  prop:        ConstraintProp
   offset?:     number
   multiplier?: number
 }
 
-export const ConstraintProp = {
-  is(value: number | string | null | ConstraintProp): value is ConstraintProp {
+export const Constraint = {
+  is(value: number | string | null | undefined | Constraint): value is Constraint {
     return isPlainObject(value)
   },
 }
+
+export type ConstraintProp = 'left' | 'right' | 'top' | 'bottom'
 
 //------
 // Transitions
