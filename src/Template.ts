@@ -1,4 +1,3 @@
-import { isPlainObject } from 'ytil'
 import { StructureVisitor } from './StructureVisitor'
 import { ComponentSpec, Constraint, GeneratorSpec, Transition } from './specification'
 import { GeneratorHook, TemplateConfig, TemplateParameter, TemplateStructure } from './types'
@@ -76,18 +75,4 @@ export interface TemplateSerialized {
   config:    TemplateConfig
   variables: TemplateParameter[]
   structure: AstNode
-}
-
-export interface InlineAsset {
-  filename: string
-  bytes:    Uint8Array
-}
-
-export const InlineAsset = {
-  isInlineAsset(value: any): value is InlineAsset {
-    if (!isPlainObject(value)) { return false }
-    if (!('filename' in value) || typeof value.filename !== 'string') { return false }
-    if (!('bytes' in value) || !(value.bytes instanceof Uint8Array)) { return false }
-    return true
-  },
 }
