@@ -1,7 +1,8 @@
 import { EnumUtil, isPlainObject, objectKeys, objectValues, sparse, splitArray } from 'ytil'
+
 import { ComponentSpec, ComponentType } from './specification'
 import { GeneratorHook, GeneratorHookType } from './types/index'
-import { AstNode, Block, Conditional, Mixin, Tag } from './types/pug'
+import { AstNode, Block, Conditional, Mixin, Tag, Text } from './types/pug'
 
 export class StructureVisitor {
 
@@ -72,7 +73,7 @@ export class StructureVisitor {
     }
 
     const type = tag.attrs[0].name as GeneratorHookType
-    const textNodes = tag.block.nodes.filter(it => it.type === 'Text')
+    const textNodes = tag.block.nodes.filter(it => it.type === 'Text') as Text[]
     const source = textNodes.map(it => it.val).join('')
 
     this.hooks.push({type, source})
