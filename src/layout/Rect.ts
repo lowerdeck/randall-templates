@@ -1,5 +1,6 @@
 import { isArray } from 'lodash'
 import { Insets } from 'ytil'
+
 import { Point } from './Point'
 import { Size } from './Size'
 
