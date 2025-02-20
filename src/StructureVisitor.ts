@@ -1,6 +1,5 @@
 import { EnumUtil, isPlainObject, objectKeys, objectValues, sparse, splitArray } from 'ytil'
-
-import { ComponentSpec, ComponentType } from './specification'
+import { ComponentSpec, ComponentType, Transition } from './specification'
 import { GeneratorHook, GeneratorHookType } from './types/index'
 import { AstNode, Block, Conditional, Mixin, Tag, Text } from './types/pug'
 
@@ -12,6 +11,7 @@ export class StructureVisitor {
 
   private readonly mixins: Record<string, Mixin> = {}
   public readonly hooks:   GeneratorHook[] = []
+  public readonly phases:  Transition[][] = []
 
   public walk(node: Block): ComponentSpec {
     const root = this.visit(node) as ComponentSpec[]
@@ -52,10 +52,10 @@ export class StructureVisitor {
 
     const type = tag.name as ComponentType
     if (!EnumUtil.values(ComponentType).includes(type)) {
-      throw new Error(`Unknown tag: ${type}`)
+      throw new Error(`${tag.line}: Unknown tag: ${type}`)
     }
 
-    const {id, ...attrs} = this.extractTagAttrs(type, tag)
+    const {id, ...attrs} = this.extractTagAttrs(tag)
     const children = this.visit(tag.block)
 
     return {
@@ -69,7 +69,7 @@ export class StructureVisitor {
   protected visit_Hook(tag: Tag) {
     const allowedTypes = EnumUtil.values(GeneratorHookType)
     if (tag.attrs.length !== 1 || !allowedTypes.includes(tag.attrs[0].name as GeneratorHookType)) {
-      throw new Error(`Invalid hook tag: ${tag.attrs[0].name}. Allowed values: ${allowedTypes.join(', ')}`)
+      throw new Error(`${tag.line}: Invalid hook tag: ${tag.attrs[0].name}. Allowed values: ${allowedTypes.join(', ')}`)
     }
 
     const type = tag.attrs[0].name as GeneratorHookType
@@ -80,8 +80,38 @@ export class StructureVisitor {
     return null
   }
 
-  protected visit_Phase(_tag: Tag) {
+  protected visit_Phase(tag: Tag) {
+    const attrs = this.extractTagAttrs(tag)
+    if (attrs.name == null) {
+      throw new Error(`${tag.line}: ${tag.line}: phase() requires a name attribute`)
+    }
+    if (typeof attrs.name !== 'string') {
+      throw new Error(`${tag.line}: Invalid phase name: ${attrs.name}`)
+    }
+
+    if (tag.block.nodes.length === 0) {
+      throw new Error(`${tag.line}: phase() requires a block`)
+    }
+    
+    if (tag.block.nodes.some(it => it.type !== 'Tag' || it.name !== 'transition')) {
+      throw new Error(`${tag.line}: phase() block must only contain transition tags`)
+    }
+
+    const transitions = tag.block.nodes.map(it => this.visit_Transition(it as Tag)) as Transition[]
+    this.phases.push(transitions)
     return null
+  }
+
+  protected visit_Transition(tag: Tag) {
+    const attrs = this.extractTagAttrs(tag)
+    if (attrs.target == null) {
+      throw new Error(`${tag.line}: ${tag.line}: phase() requires a target attribute`)
+    }
+    if (typeof attrs.target !== 'string') {
+      throw new Error(`${tag.line}: Invalid phase target: ${attrs.name}`)
+    }
+
+    return attrs as Transition
   }
 
   protected visit_Mixin(mixin: Mixin) {
@@ -95,7 +125,7 @@ export class StructureVisitor {
   protected visit_MixinCall(node: Mixin) {
     const mixin = this.mixins[node.name]
     if (mixin == null) {
-      throw new Error(`Unknown mixin: ${node.name}`)
+      throw new Error(`${node.line}: Unknown mixin: ${node.name}`)
     }
 
     // TODO: Arguments?
@@ -107,7 +137,7 @@ export class StructureVisitor {
   }
 
   protected visit_Conditional(conditional: Conditional) {
-    const matches = this.evaluateExpression(conditional.test)
+    const matches = this.evaluateExpression(conditional, conditional.test)
     if (matches) {
       return this.visit(conditional.consequent)
     } else if (conditional.alternate != null) {
@@ -119,21 +149,21 @@ export class StructureVisitor {
 
   // #region Attributes
 
-  private extractTagAttrs(type: ComponentType, tag: Tag): any {
-    const validNames = this.attrNames(type)
+  private extractTagAttrs(tag: Tag): any {
+    const validNames = this.attrNames(tag)
 
     const result: Record<string, any> = {}
     for (const {name, val} of tag.attrs) {
       if (name.startsWith('...') && val === true) {
         // Spread attr, evaluate the variable and merge it into the result.
-        const obj = this.evaluateExpression(name.slice(3))
+        const obj = this.evaluateExpression(tag, name.slice(3))
         if (!isPlainObject(obj)) {
-          throw new Error(`Invalid spread object: ${name}`)
+          throw new Error(`${tag.line}: Invalid spread object: ${name}`)
         }
 
         Object.assign(result, obj)
       } else {
-        result[name] = this.transformAttr(type, name, val)
+        result[name] = this.transformAttr(tag, val)
       }
     }
 
@@ -147,32 +177,41 @@ export class StructureVisitor {
     return result
   }
 
-  private transformAttr(_type: ComponentType, _name: string, value: any) {
-    if (typeof value !== 'string') { return null }
-    
-    return this.evaluateExpression(value)
+  private transformAttr(tag: Tag, value: any) {
+    if (typeof value !== 'string') {
+      return value
+    } else {
+      return this.evaluateExpression(tag, value)
+    }
   }
 
-  private attrNames(type: ComponentType) {
-    return sparse([
-      ...COMMON_KEYS,
-      ...CONTAINER_TYPES.includes(type) ? CONTAINER_KEYS : [],
-      ...COMPONENT_KEYS[type] ?? [],
-    ])
+  private attrNames(tag: Tag) {
+    if (tag.name === 'phase') {
+      return PHASE_KEYS
+    } else if (tag.name === 'transition') {
+      return TRANSITION_KEYS
+    } else {
+      const type = tag.name as ComponentType
+      return sparse([
+        ...COMMON_KEYS,
+        ...CONTAINER_TYPES.includes(type) ? CONTAINER_KEYS : [],
+        ...COMPONENT_KEYS[type] ?? [],
+      ])
+    }
   }
 
   // #endregion
 
   // #region Expressions & scripts
 
-  private evaluateExpression(source: string) {
+  private evaluateExpression(node: AstNode, source: string) {
     try {
       const fn = new Function(...objectKeys(this.vars), `
         return (${source});
       `)
       return fn(...objectValues(this.vars))
     } catch (error) {
-      throw new Error(`Error while parsing "${source}": ${error}`)
+      throw new Error(`${node.line}: Error while parsing "${source}": ${error}`)
     }
   }
 
@@ -219,3 +258,5 @@ const COMPONENT_KEYS = {
   [ComponentType.Text]:      ['text', 'style', 'box_style'],
   [ComponentType.Rectangle]: ['box_style'],
 }
+const PHASE_KEYS = ['name']
+const TRANSITION_KEYS = ['target', 'easing', 'duration', 'from', 'to']
