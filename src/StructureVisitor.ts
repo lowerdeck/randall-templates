@@ -1,8 +1,17 @@
 import { EnumUtil, isPlainObject, objectKeys, objectValues, sparse, splitArray } from 'ytil'
 
-import { ComponentSpec, ComponentType, GeneratorPhase, Override, Transition } from './specification'
-import { GeneratorHook, GeneratorHookType } from './types/index'
-import { AstNode, Block, Conditional, Mixin, Tag, Text } from './types/pug'
+import { ComponentSpec, ComponentType, Override, Transition } from './specification'
+import {
+  AstNode,
+  Block,
+  Conditional,
+  GeneratorHook,
+  GeneratorHookType,
+  Mixin,
+  Tag,
+  Text,
+} from './types'
+import { TemplatePhase } from './types/index'
 
 export class StructureVisitor {
 
@@ -12,7 +21,7 @@ export class StructureVisitor {
 
   private readonly mixins: Record<string, Mixin> = {}
   public readonly hooks:   GeneratorHook[] = []
-  public readonly phases: GeneratorPhase[] = []
+  public readonly phases: TemplatePhase[] = []
 
   public walk(node: Block): ComponentSpec {
     const root = this.visit(node) as ComponentSpec[]
@@ -102,7 +111,7 @@ export class StructureVisitor {
 
     const transitions = tag.block.nodes.filter(it => (it as Tag).name === 'transition').map(it => this.visit_Transition(it as Tag)) as Transition[]
     const overrides = tag.block.nodes.filter(it => (it as Tag).name === 'override').map(it => this.visit_Override(it as Tag)) as Override[]
-    this.phases.push([...transitions, ...overrides])
+    this.phases.push({transitions, overrides})
     return null
   }
 

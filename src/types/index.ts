@@ -1,4 +1,7 @@
+import { Override, Transition } from '../specification'
 import { Block } from './pug'
+
+export * from './pug'
 
 export interface TemplateConfig {
   fps:    number
@@ -24,6 +27,11 @@ export enum TemplateVariableType {
 }
 
 export type TemplateStructure = Block
+
+export interface TemplatePhase {
+  transitions: Transition[]
+  overrides: Override[]
+}
 
 export interface GeneratorHook {
   type:   GeneratorHookType
