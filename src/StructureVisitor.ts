@@ -21,7 +21,7 @@ export class StructureVisitor {
 
   private readonly mixins: Record<string, Mixin> = {}
   public readonly hooks:   GeneratorHook[] = []
-  public readonly phases: TemplatePhase[] = []
+  public readonly phases:  TemplatePhase[] = []
 
   public walk(node: Block): ComponentSpec {
     const root = this.visit(node) as ComponentSpec[]
@@ -219,12 +219,12 @@ export class StructureVisitor {
       return OVERRIDE_KEYS
     } else {
       const type = tag.name as ComponentType
-        return sparse([
-          ...COMMON_KEYS,
-          ...CONTAINER_TYPES.includes(type) ? CONTAINER_KEYS : [],
-          ...COMPONENT_KEYS[type] ?? [],
-        ])
-      }
+      return sparse([
+        ...COMMON_KEYS,
+        ...CONTAINER_TYPES.includes(type) ? CONTAINER_KEYS : [],
+        ...COMPONENT_KEYS[type] ?? [],
+      ])
+    }
   }
 
   // #endregion
