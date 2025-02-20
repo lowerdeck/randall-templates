@@ -1,5 +1,5 @@
 import { EnumUtil, isPlainObject, objectKeys, objectValues, sparse, splitArray } from 'ytil'
-import { ComponentSpec, ComponentType, Transition } from './specification'
+import { ComponentSpec, ComponentType, GeneratorPhase, Override, Transition } from './specification'
 import { GeneratorHook, GeneratorHookType } from './types/index'
 import { AstNode, Block, Conditional, Mixin, Tag, Text } from './types/pug'
 
@@ -11,7 +11,7 @@ export class StructureVisitor {
 
   private readonly mixins: Record<string, Mixin> = {}
   public readonly hooks:   GeneratorHook[] = []
-  public readonly phases:  Transition[][] = []
+  public readonly phases:  GeneratorPhase[] = []
 
   public walk(node: Block): ComponentSpec {
     const root = this.visit(node) as ComponentSpec[]
@@ -92,26 +92,41 @@ export class StructureVisitor {
     if (tag.block.nodes.length === 0) {
       throw new Error(`${tag.line}: phase() requires a block`)
     }
-    
-    if (tag.block.nodes.some(it => it.type !== 'Tag' || it.name !== 'transition')) {
-      throw new Error(`${tag.line}: phase() block must only contain transition tags`)
+
+    const isTransitionTag = (node: AstNode) => node.type === 'Tag' && node.name === 'transition'
+    const isOverrideTag = (node: AstNode) => node.type === 'Tag' && node.name === 'override'
+    if (tag.block.nodes.some(it => !isTransitionTag(it) && !isOverrideTag(it))) {
+      throw new Error(`${tag.line}: phase() block must only contain \`transition\` or \`override\` tags`)
     }
 
-    const transitions = tag.block.nodes.map(it => this.visit_Transition(it as Tag)) as Transition[]
-    this.phases.push(transitions)
+    const transitions = tag.block.nodes.filter(it => (it as Tag).name === 'transition').map(it => this.visit_Transition(it as Tag)) as Transition[]
+    const overrides = tag.block.nodes.filter(it => (it as Tag).name === 'override').map(it => this.visit_Override(it as Tag)) as Override[]
+    this.phases.push([...transitions, ...overrides])
     return null
   }
 
-  protected visit_Transition(tag: Tag) {
+  protected visit_Transition(tag: Tag): Transition {
     const attrs = this.extractTagAttrs(tag)
-    if (attrs.target == null) {
-      throw new Error(`${tag.line}: ${tag.line}: phase() requires a target attribute`)
+    if (attrs.component == null) {
+      throw new Error(`${tag.line}: ${tag.line}: transition() requires a component attribute`)
     }
-    if (typeof attrs.target !== 'string') {
-      throw new Error(`${tag.line}: Invalid phase target: ${attrs.name}`)
+    if (typeof attrs.component !== 'string') {
+      throw new Error(`${tag.line}: Invalid phase component: ${attrs.name}`)
     }
 
-    return attrs as Transition
+    return attrs
+  }
+
+  protected visit_Override(tag: Tag): Override {
+    const attrs = this.extractTagAttrs(tag)
+    if (attrs.component == null) {
+      throw new Error(`${tag.line}: ${tag.line}: override() requires a component attribute`)
+    }
+    if (typeof attrs.component !== 'string') {
+      throw new Error(`${tag.line}: Invalid phase component: ${attrs.name}`)
+    }
+
+    return attrs
   }
 
   protected visit_Mixin(mixin: Mixin) {
@@ -190,6 +205,8 @@ export class StructureVisitor {
       return PHASE_KEYS
     } else if (tag.name === 'transition') {
       return TRANSITION_KEYS
+    } else if (tag.name === 'override') {
+      return OVERRIDE_KEYS
     } else {
       const type = tag.name as ComponentType
       return sparse([
@@ -259,4 +276,6 @@ const COMPONENT_KEYS = {
   [ComponentType.Rectangle]: ['box_style'],
 }
 const PHASE_KEYS = ['name']
-const TRANSITION_KEYS = ['target', 'easing', 'duration', 'from', 'to']
+const TRANSITION_KEYS = ['component', 'easing', 'duration', 'from', 'to']
+const TRANSITION_PROPS = ['opacity', 'scale', 'rotate', 'translateX', 'translateY']
+const OVERRIDE_KEYS = ['component', ...TRANSITION_PROPS]

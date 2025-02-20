@@ -24,7 +24,6 @@ export enum TemplateVariableType {
 }
 
 export type TemplateStructure = Block
-export type TemplatePhase = Block
 
 export interface GeneratorHook {
   type:   GeneratorHookType
