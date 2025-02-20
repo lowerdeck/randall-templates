@@ -9,9 +9,10 @@ export interface GeneratorSpec {
   height: number
   fps:    number
 
-  root:  ComponentSpec
-  phase: GeneratorPhase
-  hooks: GeneratorHook[]
+  root:        ComponentSpec
+  transitions: Transition[]
+  overrides:   Override[]
+  hooks:       GeneratorHook[]
 }
 
 export type ComponentSpec =
@@ -137,8 +138,6 @@ export type ConstraintProp = 'left' | 'right' | 'top' | 'bottom'
 
 //------
 // Transitions
-
-export type GeneratorPhase = Array<Transition | Override>
 
 export interface Transition {
   component: string

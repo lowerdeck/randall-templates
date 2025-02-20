@@ -1,6 +1,12 @@
 import { StructureVisitor } from './StructureVisitor'
-import { ComponentSpec, Constraint, GeneratorPhase, GeneratorSpec } from './specification'
-import { GeneratorHook, TemplateConfig, TemplateParameter, TemplateStructure } from './types'
+import { ComponentSpec, Constraint, GeneratorSpec } from './specification'
+import {
+  GeneratorHook,
+  TemplateConfig,
+  TemplateParameter,
+  TemplatePhase,
+  TemplateStructure,
+} from './types'
 import { AstNode } from './types/pug'
 
 export class Template {
@@ -27,7 +33,8 @@ export class Template {
         height: this.config.height,
       
         root:  root,
-        phase: phase,
+        transitions: phase.transitions,
+        overrides: phase.overrides,
         hooks: hooks,
       })
     }
@@ -35,7 +42,7 @@ export class Template {
     return specifications
   }
 
-  private resolveStructure(vars: Record<string, any>): [ComponentSpec, GeneratorHook[], GeneratorPhase[]] {
+  private resolveStructure(vars: Record<string, any>): [ComponentSpec, GeneratorHook[], TemplatePhase[]] {
     const visitor = new StructureVisitor({
       ...vars,
       ...this.helpers,
