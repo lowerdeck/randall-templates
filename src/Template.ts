@@ -42,7 +42,8 @@ export class Template {
     })
     const root = visitor.walk(this.structure)
     const hooks = visitor.hooks
-    return [root, hooks, [[]]]
+    const phases = visitor.phases
+    return [root, hooks, phases]
   }
 
   private helpers = {
