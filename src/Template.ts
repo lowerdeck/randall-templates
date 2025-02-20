@@ -23,9 +23,9 @@ export class Template {
 
     const [root, hooks, phases] = this.resolveStructure(vars)
 
-    for (const [index, phase] of phases.entries()) {
+    for (const phase of phases) {
       specifications.push({
-        name: `${name} F${index + 1}`,
+        name: `${name} ${phase.name}`,
         
         fps: this.config.fps,
     
@@ -50,6 +50,9 @@ export class Template {
     const root = visitor.walk(this.structure)
     const hooks = visitor.hooks
     const phases = visitor.phases
+    if (phases.length === 0) {
+      phases.push({name: 'F1', transitions: [], overrides: []})
+    }
     return [root, hooks, phases]
   }
 

@@ -24,7 +24,6 @@ export class StructureVisitor {
   public readonly phases:  TemplatePhase[] = []
 
   public walk(node: Block): ComponentSpec {
-    const root = this.visit(node) as ComponentSpec[]
     return {
       type:     ComponentType.Group,
       children: this.visit(node) as ComponentSpec[],
@@ -98,7 +97,6 @@ export class StructureVisitor {
     if (typeof attrs.name !== 'string') {
       throw new Error(`${tag.line}: Invalid phase name: ${attrs.name}`)
     }
-
     if (tag.block.nodes.length === 0) {
       throw new Error(`${tag.line}: phase() requires a block`)
     }
@@ -109,9 +107,10 @@ export class StructureVisitor {
       throw new Error(`${tag.line}: phase() block must only contain \`transition\` or \`override\` tags`)
     }
 
+    const {name} = attrs
     const transitions = tag.block.nodes.filter(it => (it as Tag).name === 'transition').map(it => this.visit_Transition(it as Tag)) as Transition[]
     const overrides = tag.block.nodes.filter(it => (it as Tag).name === 'override').map(it => this.visit_Override(it as Tag)) as Override[]
-    this.phases.push({transitions, overrides})
+    this.phases.push({name, transitions, overrides})
     return null
   }
 
@@ -287,5 +286,5 @@ const COMPONENT_KEYS = {
 }
 const PHASE_KEYS = ['name']
 const TRANSITION_KEYS = ['component', 'easing', 'duration', 'from', 'to']
-const TRANSITION_PROPS = ['opacity', 'scale', 'rotate', 'translateX', 'translateY']
+const TRANSITION_PROPS = ['opacity', 'scale', 'rotate', 'translate_x', 'translate_y']
 const OVERRIDE_KEYS = ['component', ...TRANSITION_PROPS]

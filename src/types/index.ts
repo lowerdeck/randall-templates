@@ -29,6 +29,7 @@ export enum TemplateVariableType {
 export type TemplateStructure = Block
 
 export interface TemplatePhase {
+  name: string
   transitions: Transition[]
   overrides: Override[]
 }
