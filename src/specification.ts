@@ -1,4 +1,5 @@
 import { isPlainObject } from 'ytil'
+
 import { GeneratorHook } from './types'
 
 export interface GeneratorSpec {
@@ -8,9 +9,9 @@ export interface GeneratorSpec {
   height: number
   fps:    number
 
-  root:        ComponentSpec
-  transitions: Transition[]
-  hooks:       GeneratorHook[]
+  root:  ComponentSpec
+  phase: GeneratorPhase
+  hooks: GeneratorHook[]
 }
 
 export type ComponentSpec =
@@ -137,12 +138,18 @@ export type ConstraintProp = 'left' | 'right' | 'top' | 'bottom'
 //------
 // Transitions
 
+export type GeneratorPhase = Array<Transition | Override>
+
 export interface Transition {
   component: string
   duration:  number
   easing:    'linear' | 'ease-in' | 'ease-out' | 'ease-in-out'
   from:      Record<TransitionProp, number>
   to:        Record<TransitionProp, number>
+}
+
+export interface Override extends Record<TransitionProp, number> {
+  component: string
 }
 
 export type TransitionProp =
