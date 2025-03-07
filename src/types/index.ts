@@ -13,6 +13,8 @@ export interface TemplateParameter<T = any> {
   name:         string
   caption:      string
   type:         TemplateVariableType
+  min?:         number
+  max?:         number
   yes_caption?: string
   no_caption?:  string
   default?:     T
@@ -22,6 +24,7 @@ export enum TemplateVariableType {
   Image = 'image',
   Text = 'text',
   Multiline = 'multiline',
+  Number = 'number',
   Boolean = 'boolean',
   Outlet = 'outlet',
 }
