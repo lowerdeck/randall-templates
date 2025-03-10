@@ -15,6 +15,7 @@ export interface TemplateParameter<T = any> {
   type:         TemplateVariableType
   min?:         number
   max?:         number
+  optional?:    boolean
   yes_caption?: string
   no_caption?:  string
   default?:     T
@@ -32,9 +33,9 @@ export enum TemplateVariableType {
 export type TemplateStructure = Block
 
 export interface TemplatePhase {
-  name: string
+  name:        string
   transitions: Transition[]
-  overrides: Override[]
+  overrides:   Override[]
 }
 
 export interface GeneratorHook {
