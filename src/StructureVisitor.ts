@@ -280,7 +280,7 @@ const COMPONENT_KEYS = {
   [ComponentType.VBox]:      ['padding', 'gap', 'align', 'justify', 'box_style'],
   [ComponentType.HBox]:      ['padding', 'gap', 'align', 'justify', 'box_style'],
   [ComponentType.Image]:     ['image', 'objectFit', 'mask', 'box_style'],
-  [ComponentType.Text]:      ['text', 'style', 'box_style'],
+  [ComponentType.Text]:      ['text', 'max_width', 'max_height', 'style', 'box_style'],
   [ComponentType.Rectangle]: ['box_style'],
 }
 const PHASE_KEYS = ['name']
