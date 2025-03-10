@@ -74,10 +74,11 @@ export interface RectangleSpec extends ComponentSpecCommon {
 }
 
 export interface TextSpec extends ComponentSpecCommon {
-  type:       ComponentType.Text
-  width?:     number
-  text:       string
-  box_style?: Record<string, any>
+  type:        ComponentType.Text
+  max_width?:  number
+  max_height?: number
+  text:        string
+  box_style?:  Record<string, any>
 }
 
 //------
