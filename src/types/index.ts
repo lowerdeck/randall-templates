@@ -15,6 +15,7 @@ export interface TemplateParameter<T = any> {
   type:         TemplateVariableType
   min?:         number
   max?:         number
+  optional?:    boolean
   yes_caption?: string
   no_caption?:  string
   default?:     T
