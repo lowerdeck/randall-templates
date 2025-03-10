@@ -32,9 +32,9 @@ export enum TemplateVariableType {
 export type TemplateStructure = Block
 
 export interface TemplatePhase {
-  name: string
+  name:        string
   transitions: Transition[]
-  overrides: Override[]
+  overrides:   Override[]
 }
 
 export interface GeneratorHook {
