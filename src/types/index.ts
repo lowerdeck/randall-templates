@@ -7,6 +7,8 @@ export interface TemplateConfig {
   fps:    number
   width:  number
   height: number
+  
+  autoDetectOutlets: boolean
 }
 
 export interface TemplateParameter<T = any> {
