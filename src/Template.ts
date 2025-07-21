@@ -1,5 +1,5 @@
 import { StructureVisitor } from './StructureVisitor'
-import { ComponentSpec, Constraint, GeneratorSpec } from './specification'
+import { ComponentSpec, Constraint, SceneSpec } from './specification'
 import {
   GeneratorHook,
   TemplateConfig,
@@ -18,25 +18,26 @@ export class Template {
     public readonly structure: TemplateStructure
   ) {}
 
-  public build(name: string, vars: Record<string, any>): GeneratorSpec[] {
-    const specifications: GeneratorSpec[] = []
+  public build(name: string, vars: Record<string, any>): Array<[string, SceneSpec]> {
+    const specifications: Array<[string, SceneSpec]> = []
 
     const [root, hooks, phases] = this.resolveStructure(vars)
 
     for (const phase of phases) {
-      specifications.push({
-        name: `${name} ${phase.name}`,
-        
-        fps: this.config.fps,
-    
-        width:  this.config.width,
-        height: this.config.height,
+      specifications.push([
+        `${name} ${phase.name}`,
+        {
+          fps: this.config.fps,
       
-        root:  root,
-        transitions: phase.transitions,
-        overrides: phase.overrides,
-        hooks: hooks,
-      })
+          width:  this.config.width,
+          height: this.config.height,
+        
+          root:  root,
+          transitions: phase.transitions,
+          overrides: phase.overrides,
+          hooks: hooks,
+        }
+      ])
     }
 
     return specifications
