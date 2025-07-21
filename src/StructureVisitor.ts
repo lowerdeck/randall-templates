@@ -24,7 +24,7 @@ export class StructureVisitor {
 
   public walk(node: Block): ComponentSpec {
     return {
-      type:     ComponentType.Group,
+      type:     ComponentType.ZStack,
       children: this.visit(node) as ComponentSpec[],
     }
 
@@ -273,12 +273,12 @@ const COMMON_KEYS = [
   'paddingBottom',
 ]
 
-const CONTAINER_TYPES = [ComponentType.Group, ComponentType.VBox, ComponentType.HBox]
+const CONTAINER_TYPES = [ComponentType.ZStack, ComponentType.VStack, ComponentType.HStack]
 const CONTAINER_KEYS = ['children']
 const COMPONENT_KEYS = {
-  [ComponentType.Group]:     [],
-  [ComponentType.VBox]:      ['padding', 'gap', 'align', 'justify', 'box_style'],
-  [ComponentType.HBox]:      ['padding', 'gap', 'align', 'justify', 'box_style'],
+  [ComponentType.ZStack]:     [],
+  [ComponentType.VStack]:      ['padding', 'gap', 'align', 'justify', 'box_style'],
+  [ComponentType.HStack]:      ['padding', 'gap', 'align', 'justify', 'box_style'],
   [ComponentType.Image]:     ['image', 'objectFit', 'mask', 'box_style'],
   [ComponentType.Text]:      ['text', 'max_width', 'max_height', 'style', 'box_style'],
   [ComponentType.Rectangle]: ['box_style'],
