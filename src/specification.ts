@@ -2,9 +2,7 @@ import { isPlainObject } from 'ytil'
 
 import { GeneratorHook } from './types'
 
-export interface GeneratorSpec {
-  name: string
-
+export interface SceneSpec {
   width:  number
   height: number
   fps:    number
