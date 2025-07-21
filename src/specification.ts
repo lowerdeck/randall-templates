@@ -22,25 +22,25 @@ export type ComponentSpec =
   | ContainerSpec
 
 export type ContainerSpec =
-  | GroupSpec
-  | VBoxSpec
-  | HBoxSpec
+  | ZStackSpec
+  | VStackSpec
+  | HStackSpec
 
 export enum ComponentType {
   Image = 'image',
   Rectangle = 'rectangle',
   Text = 'text',
-  Group = 'group',
-  VBox = 'vbox',
-  HBox = 'hbox',
+  ZStack = 'zstack',
+  VStack = 'vstack',
+  HStack = 'hstack',
 }
 
-export interface GroupSpec extends ContainerSpecCommon {
-  type: ComponentType.Group
+export interface ZStackSpec extends ContainerSpecCommon {
+  type: ComponentType.ZStack
 }
 
-export interface VBoxSpec extends ContainerSpecCommon {
-  type: ComponentType.VBox
+export interface VStackSpec extends ContainerSpecCommon {
+  type: ComponentType.VStack
 
   padding?: number
   gap?:     number
@@ -50,8 +50,8 @@ export interface VBoxSpec extends ContainerSpecCommon {
   box_style?: Record<string, any>
 }
 
-export interface HBoxSpec extends ContainerSpecCommon {
-  type: ComponentType.HBox
+export interface HStackSpec extends ContainerSpecCommon {
+  type: ComponentType.HStack
 
   padding?: number
   gap?:     number
