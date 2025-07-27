@@ -1,6 +1,6 @@
 import { isPlainObject } from 'ytil'
 
-import { GeneratorHook } from './types'
+import { RendererHook } from './types'
 
 export interface SceneSpec {
   width:  number
@@ -10,7 +10,7 @@ export interface SceneSpec {
   root:        ComponentSpec
   transitions: Transition[]
   overrides:   Override[]
-  hooks:       GeneratorHook[]
+  hooks:       RendererHook[]
 }
 
 export type ComponentSpec =

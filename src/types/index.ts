@@ -38,12 +38,12 @@ export interface TemplatePhase {
   overrides:   Override[]
 }
 
-export interface GeneratorHook {
-  type:   GeneratorHookType
+export interface RendererHook {
+  type:   RendererHookType
   source: string
 }
 
-export enum GeneratorHookType {
+export enum RendererHookType {
   BeforeLayout = 'before-layout',
   AfterLayout = 'after-layout',
   AfterDraw = 'after-draw'
