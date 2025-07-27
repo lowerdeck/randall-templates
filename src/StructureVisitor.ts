@@ -5,9 +5,9 @@ import {
   AstNode,
   Block,
   Conditional,
-  GeneratorHook,
-  GeneratorHookType,
   Mixin,
+  RendererHook,
+  RendererHookType,
   Tag,
   Text,
 } from './types'
@@ -20,7 +20,7 @@ export class StructureVisitor {
   ) {}
 
   private readonly mixins: Record<string, Mixin> = {}
-  public readonly hooks:   GeneratorHook[] = []
+  public readonly hooks:   RendererHook[] = []
   public readonly phases:  TemplatePhase[] = []
 
   public walk(node: Block): ComponentSpec {
@@ -76,12 +76,12 @@ export class StructureVisitor {
   }
 
   protected visit_Hook(tag: Tag) {
-    const allowedTypes = EnumUtil.values(GeneratorHookType)
-    if (tag.attrs.length !== 1 || !allowedTypes.includes(tag.attrs[0].name as GeneratorHookType)) {
+    const allowedTypes = EnumUtil.values(RendererHookType)
+    if (tag.attrs.length !== 1 || !allowedTypes.includes(tag.attrs[0].name as RendererHookType)) {
       throw new Error(`${tag.line}: Invalid hook tag: ${tag.attrs[0].name}. Allowed values: ${allowedTypes.join(', ')}`)
     }
 
-    const type = tag.attrs[0].name as GeneratorHookType
+    const type = tag.attrs[0].name as RendererHookType
     const textNodes = tag.block.nodes.filter(it => it.type === 'Text') as Text[]
     const source = textNodes.map(it => it.val).join('')
 

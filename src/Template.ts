@@ -1,7 +1,7 @@
 import { StructureVisitor } from './StructureVisitor'
 import { ComponentSpec, Constraint, SceneSpec } from './specification'
 import {
-  GeneratorHook,
+  RendererHook,
   TemplateConfig,
   TemplateParameter,
   TemplatePhase,
@@ -43,7 +43,7 @@ export class Template {
     return specifications
   }
 
-  private resolveStructure(vars: Record<string, any>): [ComponentSpec, GeneratorHook[], TemplatePhase[]] {
+  private resolveStructure(vars: Record<string, any>): [ComponentSpec, RendererHook[], TemplatePhase[]] {
     const visitor = new StructureVisitor({
       ...vars,
       ...this.helpers,
