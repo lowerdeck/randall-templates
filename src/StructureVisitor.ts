@@ -277,9 +277,9 @@ const COMMON_KEYS = [
 const CONTAINER_TYPES = [ComponentType.ZStack, ComponentType.VStack, ComponentType.HStack]
 const CONTAINER_KEYS = ['children']
 const COMPONENT_KEYS = {
-  [ComponentType.ZStack]:     [],
-  [ComponentType.VStack]:      ['padding', 'gap', 'align', 'justify', 'box_style'],
-  [ComponentType.HStack]:      ['padding', 'gap', 'align', 'justify', 'box_style'],
+  [ComponentType.ZStack]:    [],
+  [ComponentType.VStack]:    ['padding', 'gap', 'align', 'justify', 'box_style'],
+  [ComponentType.HStack]:    ['padding', 'gap', 'align', 'justify', 'box_style'],
   [ComponentType.Image]:     ['image', 'objectFit', 'mask', 'box_style'],
   [ComponentType.Text]:      ['text', 'max_width', 'max_height', 'style', 'box_style'],
   [ComponentType.Rectangle]: ['box_style'],

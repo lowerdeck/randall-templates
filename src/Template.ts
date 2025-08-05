@@ -15,7 +15,7 @@ export class Template {
     public readonly id:   string,
     public readonly config: TemplateConfig,
     public readonly params: TemplateParameter[],
-    public readonly structure: TemplateStructure
+    public readonly structure: TemplateStructure,
   ) {}
 
   public build(name: string, vars: Record<string, any>): Array<[string, SceneSpec]> {
@@ -32,11 +32,11 @@ export class Template {
           width:  this.config.width,
           height: this.config.height,
         
-          root:  root,
+          root:        root,
           transitions: phase.transitions,
-          overrides: phase.overrides,
-          hooks: hooks,
-        }
+          overrides:   phase.overrides,
+          hooks:       hooks,
+        },
       ])
     }
 
@@ -63,7 +63,7 @@ export class Template {
       component: string, 
       relprop: 'left' | 'right' | 'top' | 'bottom', 
       offset?: number, 
-      multiplier?: number
+      multiplier?: number,
     ): Constraint => {
       return {component, prop: relprop, offset, multiplier}
     },
