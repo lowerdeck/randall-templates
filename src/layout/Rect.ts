@@ -45,7 +45,7 @@ export class Rect {
       left,
       top,
       right - left,
-      bottom - top
+      bottom - top,
     )
   }
 
@@ -65,21 +65,21 @@ export class Rect {
   public get origin() {
     return new Point(
       this.left,
-      this.top
+      this.top,
     )
   }
 
   public get center() {
     return new Point(
       this.left + this.width / 2,
-      this.top + this.height / 2
+      this.top + this.height / 2,
     )
   }
 
   public get size() {
     return new Size(
       this.width,
-      this.height
+      this.height,
     )
   }
 
@@ -114,14 +114,14 @@ export class Rect {
       this.left + insetLeft,
       this.top + insetTop,
       this.width - insetLeft - insetRight,
-      this.height - insetTop - insetBottom
+      this.height - insetTop - insetBottom,
     )
   }
 
   public offset(offset: number | Point) {
     return new Rect(
       this.origin.offset(offset),
-      this.size
+      this.size,
     )
   }
 
