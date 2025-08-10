@@ -1,7 +1,7 @@
 {
-  "name": "titelaar-templates",
+  "name": "randy-templates",
   "version": "1.0.0",
-  "description": "Titelaar templating engine.",
+  "description": "Randy the Renderer templating engine.",
   "author": "Joost Lubach",
   "license": "MIT",
   "main": "./dist/index.js",
