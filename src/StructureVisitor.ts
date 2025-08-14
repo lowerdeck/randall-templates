@@ -1,5 +1,4 @@
 import { EnumUtil, isPlainObject, objectKeys, objectValues, sparse, splitArray } from 'ytil'
-
 import { ComponentSpec, ComponentType, Override, Transition } from './specification'
 import {
   AstNode,

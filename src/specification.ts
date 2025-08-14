@@ -1,5 +1,6 @@
 import { isPlainObject } from 'ytil'
 
+import { Binary } from './iso'
 import { RendererHook } from './types'
 
 export interface SceneSpec {
@@ -61,7 +62,7 @@ export interface HStackSpec extends ContainerSpecCommon {
 
 export interface ImageSpec extends ComponentSpecCommon {
   type:       ComponentType.Image
-  image:      Buffer
+  image:      Binary
   objectFit?: 'scale' | 'cover' | 'contain'
   mask?:      'rectangle' | 'circle'
   box_style?: Record<string, any>
