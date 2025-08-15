@@ -1,7 +1,7 @@
 {
-  "name": "randy-templates",
+  "name": "titelaar-templates",
   "version": "1.0.0",
-  "description": "Randy the Renderer templating engine.",
+  "description": "Titelaar templating engine.",
   "author": "Joost Lubach",
   "license": "MIT",
   "main": "./src/index.ts",
@@ -18,10 +18,6 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.17.20",
-    "copyfiles": "^2.4.1",
-    "js-yaml": "^4.1.0",
-    "rimraf": "^6.0.1",
-    "tsc-alias": "^1.8.16",
     "typescript": "5.4.3"
   },
   "packageManager": "pnpm@9.9.0",
