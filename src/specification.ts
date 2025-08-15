@@ -42,8 +42,8 @@ export interface VStackSpec extends ContainerSpecCommon {
 
   padding?: number
   gap?:     number
-  align?:   'flex-start' | 'center' | 'flex-end' | 'stretch'
-  justify?: 'flex-start' | 'center' | 'flex-end' | 'space-between'
+  align?:   'start' | 'center' | 'end' | 'stretch'
+  justify?: 'start' | 'center' | 'end' | 'space-between'
 
   box_style?: Record<string, any>
 }
@@ -53,8 +53,8 @@ export interface HStackSpec extends ContainerSpecCommon {
 
   padding?: number
   gap?:     number
-  align?:   'flex-start' | 'center' | 'flex-end' | 'stretch'
-  justify?: 'flex-start' | 'center' | 'flex-end' | 'space-between'
+  align?:   'start' | 'center' | 'end' | 'stretch'
+  justify?: 'start' | 'center' | 'end' | 'space-between'
 
   box_style?: Record<string, any>
 }
