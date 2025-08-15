@@ -42,8 +42,8 @@ export interface VStackSpec extends ContainerSpecCommon {
 
   padding?: number
   gap?:     number
-  align?:   'left' | 'center' | 'right'
-  justify?: 'top' | 'middle' | 'bottom'
+  align?:   'flex-start' | 'center' | 'flex-end' | 'stretch'
+  justify?: 'flex-start' | 'center' | 'flex-end' | 'space-between'
 
   box_style?: Record<string, any>
 }
@@ -53,15 +53,15 @@ export interface HStackSpec extends ContainerSpecCommon {
 
   padding?: number
   gap?:     number
-  align?:   'top' | 'middle' | 'bottom' | 'stretch'
-  justify?: 'left' | 'center' | 'right'
+  align?:   'flex-start' | 'center' | 'flex-end' | 'stretch'
+  justify?: 'flex-start' | 'center' | 'flex-end' | 'space-between'
 
   box_style?: Record<string, any>
 }
 
 export interface ImageSpec extends ComponentSpecCommon {
   type:       ComponentType.Image
-  image:      Binary
+  src:        Binary
   objectFit?: 'scale' | 'cover' | 'contain'
   mask?:      'rectangle' | 'circle'
   box_style?: Record<string, any>
