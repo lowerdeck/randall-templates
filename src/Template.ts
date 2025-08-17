@@ -18,14 +18,14 @@ export class Template {
     public readonly structure: TemplateStructure,
   ) {}
 
-  public build(name: string, vars: Record<string, any>): Array<[string, SceneSpec]> {
+  public build(vars: Record<string, any>): Array<[string, SceneSpec]> {
     const specifications: Array<[string, SceneSpec]> = []
 
     const [root, hooks, phases] = this.resolveStructure(vars)
 
     for (const phase of phases) {
       specifications.push([
-        `${name} ${phase.name}`,
+        phase.name,
         {
           fps: this.config.fps,
       

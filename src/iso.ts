@@ -1,1 +1,1 @@
-export type Binary = ArrayBuffer
+export type Binary = Buffer
