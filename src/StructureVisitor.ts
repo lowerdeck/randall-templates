@@ -1,5 +1,4 @@
-import { EnumUtil, isPlainObject, objectKeys, objectValues, sparse, splitArray } from 'ytil'
-
+import { EnumUtil, isPlainObject, objectKeys, sparse, splitArray } from 'ytil'
 import { ComponentSpec, ComponentType, Override, Transition } from './specification'
 import {
   AstNode,
@@ -232,12 +231,10 @@ export class StructureVisitor {
 
   private evaluateExpression(node: AstNode, source: string) {
     try {
-      const fn = new Function(...objectKeys(this.vars), `
-        return (${source});
-      `)
-      return fn(...objectValues(this.vars))
+      const fn = new Function('vars', `with (vars) { return (${source}); }`)
+      return fn(this.vars)
     } catch (error) {
-      throw new Error(`${node.line}: Error while parsing "${source}": ${error}`)
+      throw new Error(`${node.line}: Error while evaluating expression \`${source}\`: ${error}`)
     }
   }
 
