@@ -220,7 +220,7 @@ export class StructureVisitor {
       return sparse([
         ...COMMON_KEYS,
         ...CONTAINER_TYPES.includes(type) ? CONTAINER_KEYS : [],
-        ...COMPONENT_KEYS[type] ?? [],
+        ...PROPERTY_KEYS[type] ?? [],
       ])
     }
   }
@@ -256,30 +256,30 @@ const COMMON_KEYS = [
   'height',
 
   'offset',
-  'offsetX',
-  'offsetY',
+  'offset_x',
+  'offset_y',
 
   'flex',
-  'flexGrow',
-  'flexShrink',
-  'flexBasis',
+  'flex_grow',
+  'flex_shrink',
+  'flex_basis',
   
   'padding',
-  'paddingLeft',
-  'paddingRight',
-  'paddingTop',
-  'paddingBottom',
+  'padding_left',
+  'padding_right',
+  'padding_top',
+  'padding_bottom',
 ]
 
 const CONTAINER_TYPES = [ComponentType.ZStack, ComponentType.VStack, ComponentType.HStack]
 const CONTAINER_KEYS = ['children']
-const COMPONENT_KEYS = {
+const PROPERTY_KEYS = {
   [ComponentType.ZStack]:    [],
-  [ComponentType.VStack]:    ['padding', 'gap', 'align', 'justify', 'box_style'],
-  [ComponentType.HStack]:    ['padding', 'gap', 'align', 'justify', 'box_style'],
-  [ComponentType.Image]:     ['src', 'objectFit', 'mask', 'box_style'],
-  [ComponentType.Text]:      ['text', 'max_width', 'max_height', 'style', 'box_style'],
-  [ComponentType.Rectangle]: ['box_style'],
+  [ComponentType.VStack]:    ['padding', 'gap', 'align', 'justify'],
+  [ComponentType.HStack]:    ['padding', 'gap', 'align', 'justify'],
+  [ComponentType.Image]:     ['src', 'objectFit', 'mask'],
+  [ComponentType.Text]:      ['text', 'max_width', 'max_height'],
+  [ComponentType.Rectangle]: [],
 }
 const PHASE_KEYS = ['name']
 const TRANSITION_KEYS = ['component', 'easing', 'duration', 'from', 'to']

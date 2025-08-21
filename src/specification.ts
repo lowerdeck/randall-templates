@@ -1,5 +1,4 @@
 import { isPlainObject } from 'ytil'
-
 import { Binary } from './iso'
 import { RendererHook } from './types'
 
@@ -45,8 +44,6 @@ export interface VStackSpec extends ContainerSpecCommon {
   gap?:     number
   align?:   'start' | 'center' | 'end' | 'stretch'
   justify?: 'start' | 'center' | 'end' | 'space-between'
-
-  box_style?: Record<string, any>
 }
 
 export interface HStackSpec extends ContainerSpecCommon {
@@ -56,16 +53,13 @@ export interface HStackSpec extends ContainerSpecCommon {
   gap?:     number
   align?:   'start' | 'center' | 'end' | 'stretch'
   justify?: 'start' | 'center' | 'end' | 'space-between'
-
-  box_style?: Record<string, any>
 }
 
 export interface ImageSpec extends ComponentSpecCommon {
-  type:       ComponentType.Image
-  src:        Binary
-  objectFit?: 'scale' | 'cover' | 'contain'
-  mask?:      'rectangle' | 'circle'
-  box_style?: Record<string, any>
+  type:         ComponentType.Image
+  src:          Binary
+  resize_mode?: 'cover' | 'contain' | 'stretch'
+  mask?:        'ellipse' | 'rectangle'
 }
 
 export interface RectangleSpec extends ComponentSpecCommon {
@@ -77,7 +71,6 @@ export interface TextSpec extends ComponentSpecCommon {
   max_width?:  number
   max_height?: number
   text:        string
-  box_style?:  Record<string, any>
 }
 
 //------
@@ -100,22 +93,22 @@ export interface ComponentLayoutSpec {
   bottom?: number | Constraint
   
   offset?:  [number, number]
-  offsetX?: number
-  offsetY?: number
+  offset_x?: number
+  offset_y?: number
 
   width?:  number
   height?: number
 
   flex?:       number | [number, number, number | 'auto']
-  flexGrow?:   number
-  flexShrink?: number
-  flexBasis?:  number | 'auto'
+  flex_grow?:   number
+  flex_shrink?: number
+  flex_basis?:  number | 'auto'
 
   padding?:       number
-  paddingLeft?:   number
-  paddingRight?:  number
-  paddingTop?:    number
-  paddingBottom?: number
+  padding_left?:   number
+  padding_right?:  number
+  padding_top?:    number
+  padding_bottom?: number
 }
 
 //------
