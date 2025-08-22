@@ -1,7 +1,7 @@
 {
   "name": "templates",
   "version": "1.0.0",
-  "description": "Randy the Renderer templating engine.",
+  "description": "Randall the Renderer templating engine.",
   "author": "Joost Lubach",
   "license": "MIT",
   "main": "./dist/index.js",
