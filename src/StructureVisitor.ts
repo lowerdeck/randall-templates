@@ -234,6 +234,7 @@ export class StructureVisitor {
       const fn = new Function('vars', `with (vars) { return (${source}); }`)
       return fn(this.vars)
     } catch (error) {
+      if (error instanceof ReferenceError) { return null }
       throw new Error(`${node.line}: Error while evaluating expression \`${source}\`: ${error}`)
     }
   }
