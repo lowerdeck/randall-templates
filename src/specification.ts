@@ -56,7 +56,7 @@ export interface HStackSpec extends ContainerSpecCommon {
 
 export interface ImageSpec extends ComponentSpecCommon {
   type:         ComponentType.Image
-  src:          Uint8Array
+  src:          Uint8Array<ArrayBuffer>
   resize_mode?: 'cover' | 'contain' | 'stretch'
   mask?:        'ellipse' | 'rectangle'
 }
