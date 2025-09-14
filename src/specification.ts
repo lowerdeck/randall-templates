@@ -69,7 +69,7 @@ export interface TextSpec extends ComponentSpecCommon {
   type:        ComponentType.Text
   max_width?:  number
   max_height?: number
-  text:        string
+  text?:       string
 }
 
 //------
@@ -96,7 +96,12 @@ export interface ComponentLayoutSpec {
   offset_y?: number
 
   width?:  number
+  max_width?:  number
+  min_width?:  number
+  
   height?: number
+  max_height?: number
+  min_height?: number
 
   flex?:       number | [number, number, number | 'auto']
   flex_grow?:   number
