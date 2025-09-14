@@ -261,6 +261,8 @@ const COMMON_KEYS = [
   'max_height',
   'min_height',
 
+  'aspect_ratio',
+
   'offset',
   'offset_x',
   'offset_y',
@@ -284,7 +286,7 @@ const PROPERTY_KEYS = {
   [ComponentType.VStack]:    ['padding', 'gap', 'align', 'justify'],
   [ComponentType.HStack]:    ['padding', 'gap', 'align', 'justify'],
   [ComponentType.Image]:     ['src', 'objectFit', 'mask'],
-  [ComponentType.Text]:      ['text', 'max_width', 'max_height'],
+  [ComponentType.Text]:      ['text'],
   [ComponentType.Rectangle]: [],
 }
 const PHASE_KEYS = ['name']

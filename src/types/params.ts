@@ -21,6 +21,7 @@ export interface TextParameter extends TemplateParameterCommon<string> {
   type: 'text'
   min_length?: number
   max_length?: number
+  multiline: boolean
 }
 
 export interface ImageParameter extends TemplateParameterCommon<string> {
