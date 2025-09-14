@@ -13,6 +13,7 @@ export interface TemplateParameter<T = any> {
   name:         string
   caption:      string
   type:         TemplateVariableType
+  visible?:     boolean
   min?:         number
   max?:         number
   optional?:    boolean
@@ -28,6 +29,7 @@ export enum TemplateVariableType {
   Number = 'number',
   Boolean = 'boolean',
   Outlet = 'outlet',
+  Object = 'object'
 }
 
 export type TemplateStructure = Block

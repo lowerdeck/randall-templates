@@ -254,7 +254,12 @@ const COMMON_KEYS = [
   'bottom',
 
   'width',
+  'max_width',
+  'min_width',
+
   'height',
+  'max_height',
+  'min_height',
 
   'offset',
   'offset_x',
