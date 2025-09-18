@@ -52,7 +52,7 @@ export class Template {
     const hooks = visitor.hooks
     const phases = visitor.phases
     if (phases.length === 0) {
-      phases.push({name: 'F1', transitions: [], overrides: []})
+      phases.push({name: 'main', transitions: [], overrides: []})
     }
     return [root, hooks, phases]
   }

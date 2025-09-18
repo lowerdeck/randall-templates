@@ -1,4 +1,5 @@
 import { EnumUtil, isPlainObject, objectKeys, sparse, splitArray } from 'ytil'
+
 import { ComponentSpec, ComponentType, Override, Transition } from './specification'
 import {
   AstNode,
@@ -246,6 +247,7 @@ export class StructureVisitor {
 const COMMON_KEYS = [
   'id',
   'style',
+  'preview',
 
   'inset',
   'left',
