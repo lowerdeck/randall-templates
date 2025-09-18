@@ -247,7 +247,6 @@ export class StructureVisitor {
 const COMMON_KEYS = [
   'id',
   'style',
-  'preview',
 
   'inset',
   'left',
@@ -287,7 +286,7 @@ const PROPERTY_KEYS = {
   [ComponentType.ZStack]:    [],
   [ComponentType.VStack]:    ['padding', 'gap', 'align', 'justify'],
   [ComponentType.HStack]:    ['padding', 'gap', 'align', 'justify'],
-  [ComponentType.Image]:     ['src', 'objectFit', 'mask'],
+  [ComponentType.Image]:     ['src', 'resize_mode', 'mask'],
   [ComponentType.Text]:      ['text'],
   [ComponentType.Rectangle]: [],
 }
