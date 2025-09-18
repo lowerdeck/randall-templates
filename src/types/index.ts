@@ -5,10 +5,10 @@ export * from './params'
 export * from './pug'
 
 export interface TemplateConfig {
-  fps:    number
-  width:  number
-  height: number
-  preview: TemplatePreviewConfig
+  fps:      number
+  width:    number
+  height:   number
+  preview?: TemplatePreviewConfig
 }
 
 export interface TemplatePreviewConfig {
