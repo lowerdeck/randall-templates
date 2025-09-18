@@ -246,7 +246,6 @@ export class StructureVisitor {
 const COMMON_KEYS = [
   'id',
   'style',
-  'preview',
 
   'inset',
   'left',

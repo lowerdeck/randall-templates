@@ -8,6 +8,11 @@ export interface TemplateConfig {
   fps:    number
   width:  number
   height: number
+  preview: TemplatePreviewConfig
+}
+
+export interface TemplatePreviewConfig {
+  background?: string
 }
 
 export type TemplateStructure = Block
