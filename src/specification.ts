@@ -56,7 +56,7 @@ export interface HStackSpec extends ContainerSpecCommon {
 
 export interface ImageSpec extends ComponentSpecCommon {
   type:          ComponentType.Image
-  src:           Uint8Array<ArrayBuffer>
+  src:           Uint8Array<ArrayBuffer> | string
   aspect_ratio?: number
   resize_mode?: 'cover' | 'contain' | 'stretch'
   mask?:        'ellipse' | 'rectangle'
@@ -81,8 +81,9 @@ export interface ContainerSpecCommon extends ComponentSpecCommon {
 }
 
 export interface ComponentSpecCommon extends ComponentLayoutSpec {
-  id?:    string
-  style?: Record<string, any>
+  id?:      string
+  preview?: boolean
+  style?:   Record<string, any>
 }
 
 export interface ComponentLayoutSpec {
