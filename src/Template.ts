@@ -49,6 +49,9 @@ export class Template {
       ...this.helpers,
     })
     const root = visitor.walk(this.structure)
+    root.width = this.config.width
+    root.height = this.config.height
+    
     const hooks = visitor.hooks
     const phases = visitor.phases
     if (phases.length === 0) {
