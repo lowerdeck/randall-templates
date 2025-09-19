@@ -8,7 +8,7 @@ export interface TemplateConfig {
   fps:    number
   width:  number
   height: number
-  preview: TemplatePreviewConfig
+  preview?: TemplatePreviewConfig
 }
 
 export interface TemplatePreviewConfig {
