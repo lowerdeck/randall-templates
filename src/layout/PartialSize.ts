@@ -9,4 +9,11 @@ export class PartialSize {
   public static undefined() { return new PartialSize(undefined, undefined) }
   public static zero() { return new PartialSize(0, 0) }
 
+  public ceil() {
+    return new PartialSize(
+      this.width == null ? undefined : Math.ceil(this.width),
+      this.height == null ? undefined : Math.ceil(this.height)
+    )
+  }
+
 }

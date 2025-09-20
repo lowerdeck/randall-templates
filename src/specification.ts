@@ -48,7 +48,6 @@ export interface ImageSpec extends ComponentSpecCommon {
   src:           Uint8Array<ArrayBuffer> | string
   aspect_ratio?: number
   resize_mode?: 'cover' | 'contain' | 'stretch'
-  mask?:        'ellipse' | 'rectangle'
 }
 
 export interface RectangleSpec extends ComponentSpecCommon {
@@ -90,7 +89,7 @@ export interface ComponentLayoutSpec {
   max_height?: number
   min_height?: number
 
-  flex?:       number | [number, number, number | 'auto']
+  flex?:       number
   flex_grow?:   number
   flex_shrink?: number
   flex_basis?:  number | 'auto'
