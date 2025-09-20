@@ -1,4 +1,3 @@
-import { isPlainObject } from 'ytil'
 import { RendererHook } from './types'
 
 export interface SceneSpec {
@@ -38,20 +37,10 @@ export interface ZStackSpec extends ContainerSpecCommon {
 
 export interface VStackSpec extends ContainerSpecCommon {
   type: ComponentType.VStack
-
-  padding?: number
-  gap?:     number
-  align?:   'start' | 'center' | 'end' | 'stretch'
-  justify?: 'start' | 'center' | 'end' | 'space-between'
 }
 
 export interface HStackSpec extends ContainerSpecCommon {
   type: ComponentType.HStack
-
-  padding?: number
-  gap?:     number
-  align?:   'start' | 'center' | 'end' | 'stretch'
-  justify?: 'start' | 'center' | 'end' | 'space-between'
 }
 
 export interface ImageSpec extends ComponentSpecCommon {
@@ -106,6 +95,10 @@ export interface ComponentLayoutSpec {
   flex_shrink?: number
   flex_basis?:  number | 'auto'
 
+  gap?:     number
+  align?:   FlexAlign
+  justify?: FlexJustify
+
   padding?:        number
   padding_x?:      number
   padding_y?:      number
@@ -115,23 +108,8 @@ export interface ComponentLayoutSpec {
   padding_bottom?: number
 }
 
-//------
-// Layout
-
-export interface Constraint {
-  component:   string
-  prop:        ConstraintProp
-  offset?:     number
-  multiplier?: number
-}
-
-export const Constraint = {
-  is(value: number | string | null | undefined | Constraint): value is Constraint {
-    return isPlainObject(value)
-  },
-}
-
-export type ConstraintProp = 'left' | 'right' | 'top' | 'bottom'
+export type FlexAlign = 'start' | 'center' | 'end' | 'stretch'
+export type FlexJustify = 'start' | 'center' | 'end' | 'space-between'
 
 //------
 // Transitions

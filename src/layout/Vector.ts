@@ -1,6 +1,6 @@
 
 
-export class Point {
+export class Vector {
 
   constructor(x: number, y: number)
   constructor(...args: any[]) {
@@ -11,11 +11,15 @@ export class Point {
     }
   }
 
+  public static zero() {
+    return new Vector(0, 0)
+  }
+
   public x: number
   public y: number
 
-  public offset(offset: number | Point): Point {
-    return new Point(
+  public offset(offset: number | Vector): Vector {
+    return new Vector(
       this.x + (typeof offset === 'number' ? offset : offset.x),
       this.y + (typeof offset === 'number' ? offset : offset.y),
     )

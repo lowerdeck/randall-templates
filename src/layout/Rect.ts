@@ -1,13 +1,12 @@
 import { isArray } from 'lodash'
 import { Insets } from 'ytil'
-
-import { Point } from './Point'
 import { Size } from './Size'
+import { Vector } from './Vector'
 
 export class Rect {
 
   constructor(left: number, top: number, width: number, height: number)
-  constructor(origin: Point, size: Size)
+  constructor(origin: Vector, size: Size)
   constructor(...args: any[]) {
     if (args.length === 4) {
       [
@@ -63,14 +62,14 @@ export class Rect {
   }
 
   public get origin() {
-    return new Point(
+    return new Vector(
       this.left,
       this.top,
     )
   }
 
   public get center() {
-    return new Point(
+    return new Vector(
       this.left + this.width / 2,
       this.top + this.height / 2,
     )
@@ -118,7 +117,7 @@ export class Rect {
     )
   }
 
-  public offset(offset: number | Point) {
+  public offset(offset: number | Vector) {
     return new Rect(
       this.origin.offset(offset),
       this.size,
