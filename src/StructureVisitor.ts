@@ -1,5 +1,4 @@
 import { EnumUtil, isPlainObject, objectKeys, sparse, splitArray } from 'ytil'
-
 import { ComponentSpec, ComponentType, Override, Transition } from './specification'
 import {
   AstNode,
@@ -288,7 +287,7 @@ const PROPERTY_KEYS = {
   [ComponentType.ZStack]:    [],
   [ComponentType.VStack]:    ['gap', 'align', 'justify'],
   [ComponentType.HStack]:    ['gap', 'align', 'justify'],
-  [ComponentType.Image]:     ['src', 'resize_mode', 'mask'],
+  [ComponentType.Image]:     ['src', 'resize_mode'],
   [ComponentType.Text]:      ['text'],
   [ComponentType.Rectangle]: [],
 }
