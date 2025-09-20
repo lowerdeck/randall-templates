@@ -1,5 +1,5 @@
 import { StructureVisitor } from './StructureVisitor'
-import { ComponentSpec, Constraint, SceneSpec } from './specification'
+import { ComponentSpec, SceneSpec } from './specification'
 import {
   RendererHook,
   TemplateConfig,
@@ -46,7 +46,6 @@ export class Template {
   private resolveStructure(vars: Record<string, any>): [ComponentSpec, RendererHook[], TemplatePhase[]] {
     const visitor = new StructureVisitor({
       ...vars,
-      ...this.helpers,
     })
     const root = visitor.walk(this.structure)
     root.width = this.config.width
@@ -62,20 +61,6 @@ export class Template {
       })
     }
     return [root, hooks, phases]
-  }
-
-  private helpers = {
-
-    constraint: (
-      component: string, 
-      relprop: 'left' | 'right' | 'top' | 'bottom', 
-      offset?: number, 
-      multiplier?: number,
-    ): Constraint => {
-      return {component, prop: relprop, offset, multiplier}
-    },
-
-
   }
 
   public serialize(): TemplateSerialized {
