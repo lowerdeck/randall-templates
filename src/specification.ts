@@ -88,15 +88,11 @@ export interface ComponentSpecCommon extends ComponentLayoutSpec {
 
 export interface ComponentLayoutSpec {
   inset?:  number
-  left?:   number | Constraint
-  right?:  number | Constraint
-  top?:    number | Constraint
-  bottom?: number | Constraint
+  left?:   number
+  right?:  number
+  top?:    number
+  bottom?: number
   
-  offset?:  [number, number]
-  offset_x?: number
-  offset_y?: number
-
   width?:  number
   max_width?:  number
   min_width?:  number
@@ -110,7 +106,9 @@ export interface ComponentLayoutSpec {
   flex_shrink?: number
   flex_basis?:  number | 'auto'
 
-  padding?:       number
+  padding?:        number
+  padding_x?:      number
+  padding_y?:      number
   padding_left?:   number
   padding_right?:  number
   padding_top?:    number

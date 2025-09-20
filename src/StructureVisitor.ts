@@ -273,6 +273,8 @@ const COMMON_KEYS = [
   'flex_basis',
   
   'padding',
+  'padding_x',
+  'padding_y',
   'padding_left',
   'padding_right',
   'padding_top',
@@ -283,8 +285,8 @@ const CONTAINER_TYPES = [ComponentType.ZStack, ComponentType.VStack, ComponentTy
 const CONTAINER_KEYS = ['children']
 const PROPERTY_KEYS = {
   [ComponentType.ZStack]:    [],
-  [ComponentType.VStack]:    ['padding', 'gap', 'align', 'justify'],
-  [ComponentType.HStack]:    ['padding', 'gap', 'align', 'justify'],
+  [ComponentType.VStack]:    ['gap', 'align', 'justify'],
+  [ComponentType.HStack]:    ['gap', 'align', 'justify'],
   [ComponentType.Image]:     ['src', 'resize_mode', 'mask'],
   [ComponentType.Text]:      ['text'],
   [ComponentType.Rectangle]: [],
