@@ -1,4 +1,5 @@
 import { EnumUtil, isPlainObject, objectKeys, sparse, splitArray } from 'ytil'
+
 import { Animation, ComponentSpec, ComponentType, Effect, Override } from './specification'
 import { AstNode, Block, Conditional, Mixin, Tag, Text } from './types'
 import { TemplatePhase } from './types/index'
@@ -81,11 +82,11 @@ export class StructureVisitor {
 
   protected visit_Animation(tag: Tag): Animation {
     switch (tag.name) {
-      case 'transition': return this.visit_Transition(tag)
-      case 'override':   return this.visit_Override(tag)
-      case 'effect': return this.visit_Effect(tag)
-      default:
-        throw new Error(`${tag.line}: Unknown animation: ${tag.name}`)
+    case 'transition': return this.visit_Transition(tag)
+    case 'override': return this.visit_Override(tag)
+    case 'effect': return this.visit_Effect(tag)
+    default:
+      throw new Error(`${tag.line}: Unknown animation: ${tag.name}`)
     }
   }
 
@@ -98,7 +99,10 @@ export class StructureVisitor {
       throw new Error(`${tag.line}: Invalid phase component: ${attrs.name}`)
     }
 
-    return attrs
+    return {
+      type: 'transition',
+      ...attrs,
+    }
   }
 
   protected visit_Override(tag: Tag): Override {
@@ -110,7 +114,10 @@ export class StructureVisitor {
       throw new Error(`${tag.line}: Invalid phase component: ${attrs.name}`)
     }
 
-    return attrs
+    return {
+      type: 'override',
+      ...attrs,
+    }
   }
 
   protected visit_Effect(tag: Tag): Effect {
@@ -130,10 +137,10 @@ export class StructureVisitor {
     }
 
     switch (attrs.name) {
-      case 'typing':
-        return this.visit_TypingEffect(tag, attrs.component)
-      default:
-        throw new Error(`${tag.line}: Unknown effect: ${attrs.name}`)
+    case 'typing':
+      return this.visit_TypingEffect(tag, attrs.component)
+    default:
+      throw new Error(`${tag.line}: Unknown effect: ${attrs.name}`)
     }
   }
 
