@@ -1,12 +1,6 @@
 import { StructureVisitor } from './StructureVisitor'
 import { ComponentSpec, SceneSpec } from './specification'
-import {
-  RendererHook,
-  TemplateConfig,
-  TemplateParameter,
-  TemplatePhase,
-  TemplateStructure,
-} from './types'
+import { TemplateConfig, TemplateParameter, TemplatePhase, TemplateStructure } from './types'
 import { AstNode } from './types/pug'
 
 export class Template {
@@ -21,7 +15,7 @@ export class Template {
   public build(vars: Record<string, any>): Array<[string, SceneSpec]> {
     const specifications: Array<[string, SceneSpec]> = []
 
-    const [root, hooks, phases] = this.resolveStructure(vars)
+    const [root, phases] = this.resolveStructure(vars)
 
     for (const phase of phases) {
       specifications.push([
@@ -32,10 +26,8 @@ export class Template {
           width:  this.config.width,
           height: this.config.height,
         
-          root:        root,
-          transitions: phase.transitions,
-          overrides:   phase.overrides,
-          hooks:       hooks,
+          root:       root,
+          animations: phase.animations,
         },
       ])
     }
@@ -43,7 +35,7 @@ export class Template {
     return specifications
   }
 
-  private resolveStructure(vars: Record<string, any>): [ComponentSpec, RendererHook[], TemplatePhase[]] {
+  private resolveStructure(vars: Record<string, any>): [ComponentSpec, TemplatePhase[]] {
     const visitor = new StructureVisitor({
       ...vars,
     })
@@ -51,16 +43,14 @@ export class Template {
     root.width = this.config.width
     root.height = this.config.height
     
-    const hooks = visitor.hooks
     const phases = visitor.phases
     if (phases.length === 0) {
       phases.push({
-        name:        'main',
-        transitions: [],
-        overrides:   [],
+        name:       'main',
+        animations: [],
       })
     }
-    return [root, hooks, phases]
+    return [root, phases]
   }
 
   public serialize(): TemplateSerialized {

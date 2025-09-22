@@ -1,14 +1,12 @@
-import { RendererHook } from './types'
+
 
 export interface SceneSpec {
   width:  number
   height: number
   fps:    number
 
-  root:        ComponentSpec
-  transitions: Transition[]
-  overrides:   Override[]
-  hooks:       RendererHook[]
+  root:       ComponentSpec
+  animations: Animation[]
 }
 
 export type ComponentSpec =
@@ -113,6 +111,8 @@ export type FlexJustify = 'start' | 'center' | 'end' | 'space-between'
 //------
 // Transitions
 
+export type Animation = Transition | Override | Effect
+
 export interface Transition {
   component: string
   duration:  number
@@ -131,3 +131,11 @@ export type TransitionProp =
   | 'rotate'
   | 'translateX'
   | 'translateY'
+
+export type Effect = TypingEffect
+
+export interface TypingEffect {
+  type:      'typing'
+  component: string
+  duration:  number
+}

@@ -1,15 +1,7 @@
 import { EnumUtil, isPlainObject, objectKeys, sparse, splitArray } from 'ytil'
-import { ComponentSpec, ComponentType, Override, Transition } from './specification'
-import {
-  AstNode,
-  Block,
-  Conditional,
-  Mixin,
-  RendererHook,
-  RendererHookType,
-  Tag,
-  Text,
-} from './types'
+
+import { Animation, ComponentSpec, ComponentType, Override } from './specification'
+import { AstNode, Block, Conditional, Mixin, Tag, Text } from './types'
 import { TemplatePhase } from './types/index'
 
 export class StructureVisitor {
@@ -19,7 +11,6 @@ export class StructureVisitor {
   ) {}
 
   private readonly mixins: Record<string, Mixin> = {}
-  public readonly hooks:   RendererHook[] = []
   public readonly phases:  TemplatePhase[] = []
 
   public walk(node: Block): ComponentSpec {
@@ -51,9 +42,6 @@ export class StructureVisitor {
   }
 
   protected visit_Tag(tag: Tag): ComponentSpec | null {
-    if (tag.name === 'hook') {
-      return this.visit_Hook(tag)
-    }
     if (tag.name === 'phase') {
       return this.visit_Phase(tag)
     }
@@ -72,20 +60,6 @@ export class StructureVisitor {
       ...attrs,
       children,
     } as ComponentSpec
-  }
-
-  protected visit_Hook(tag: Tag) {
-    const allowedTypes = EnumUtil.values(RendererHookType)
-    if (tag.attrs.length !== 1 || !allowedTypes.includes(tag.attrs[0].name as RendererHookType)) {
-      throw new Error(`${tag.line}: Invalid hook tag: ${tag.attrs[0].name}. Allowed values: ${allowedTypes.join(', ')}`)
-    }
-
-    const type = tag.attrs[0].name as RendererHookType
-    const textNodes = tag.block.nodes.filter(it => it.type === 'Text') as Text[]
-    const source = textNodes.map(it => it.val).join('')
-
-    this.hooks.push({type, source})
-    return null
   }
 
   protected visit_Phase(tag: Tag) {
@@ -107,13 +81,12 @@ export class StructureVisitor {
     }
 
     const {name} = attrs
-    const transitions = tag.block.nodes.filter(it => (it as Tag).name === 'transition').map(it => this.visit_Transition(it as Tag)) as Transition[]
-    const overrides = tag.block.nodes.filter(it => (it as Tag).name === 'override').map(it => this.visit_Override(it as Tag)) as Override[]
-    this.phases.push({name, transitions, overrides})
+    const animations = tag.block.nodes.filter(it => (it as Tag).name === 'animation').map(it => this.visit_Animation(it as Tag)) as Animation[]
+    this.phases.push({name, animations})
     return null
   }
 
-  protected visit_Transition(tag: Tag): Transition {
+  protected visit_Animation(tag: Tag): Animation {
     const attrs = this.extractTagAttrs(tag)
     if (attrs.component == null) {
       throw new Error(`${tag.line}: ${tag.line}: transition() requires a component attribute`)

@@ -1,4 +1,4 @@
-import { Override, Transition } from '../specification'
+import { Animation } from '../specification'
 import { Block } from './pug'
 
 export * from './params'
@@ -18,9 +18,8 @@ export interface TemplatePreviewConfig {
 export type TemplateStructure = Block
 
 export interface TemplatePhase {
-  name:        string
-  transitions: Transition[]
-  overrides:   Override[]
+  name:       string
+  animations: Animation[]
 }
 
 export interface RendererHook {
