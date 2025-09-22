@@ -135,7 +135,8 @@ export type TransitionProp =
 export type Effect = TypingEffect
 
 export interface TypingEffect {
-  type:      'typing'
+  type:      'effect',
+  name:      'typing'
   component: string
   duration:  number
 }

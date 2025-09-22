@@ -1,6 +1,5 @@
 import { EnumUtil, isPlainObject, objectKeys, sparse, splitArray } from 'ytil'
-
-import { Animation, ComponentSpec, ComponentType, Override } from './specification'
+import { Animation, ComponentSpec, ComponentType, Effect, Override } from './specification'
 import { AstNode, Block, Conditional, Mixin, Tag, Text } from './types'
 import { TemplatePhase } from './types/index'
 
@@ -74,19 +73,23 @@ export class StructureVisitor {
       throw new Error(`${tag.line}: phase() requires a block`)
     }
 
-    const isTransitionTag = (node: AstNode) => node.type === 'Tag' && node.name === 'transition'
-    const isOverrideTag = (node: AstNode) => node.type === 'Tag' && node.name === 'override'
-    if (tag.block.nodes.some(it => !isTransitionTag(it) && !isOverrideTag(it))) {
-      throw new Error(`${tag.line}: phase() block must only contain \`transition\` or \`override\` tags`)
-    }
-
     const {name} = attrs
-    const animations = tag.block.nodes.filter(it => (it as Tag).name === 'animation').map(it => this.visit_Animation(it as Tag)) as Animation[]
+    const animations = tag.block.nodes.map(it => this.visit_Animation(it as Tag)) as Animation[]
     this.phases.push({name, animations})
     return null
   }
 
   protected visit_Animation(tag: Tag): Animation {
+    switch (tag.name) {
+      case 'transition': return this.visit_Transition(tag)
+      case 'override':   return this.visit_Override(tag)
+      case 'effect': return this.visit_Effect(tag)
+      default:
+        throw new Error(`${tag.line}: Unknown animation: ${tag.name}`)
+    }
+  }
+
+  protected visit_Transition(tag: Tag) {
     const attrs = this.extractTagAttrs(tag)
     if (attrs.component == null) {
       throw new Error(`${tag.line}: ${tag.line}: transition() requires a component attribute`)
@@ -108,6 +111,45 @@ export class StructureVisitor {
     }
 
     return attrs
+  }
+
+  protected visit_Effect(tag: Tag): Effect {
+    const attrs = this.extractTagAttrs(tag)
+    if (attrs.name == null) {
+      throw new Error(`${tag.line}: ${tag.line}: effect() requires a name attribute`)
+    }
+    if (typeof attrs.name !== 'string') {
+      throw new Error(`${tag.line}: Invalid effect name: ${attrs.name}`)
+    }
+
+    if (attrs.component == null) {
+      throw new Error(`${tag.line}: ${tag.line}: effect() requires a component attribute`)
+    }
+    if (typeof attrs.component !== 'string') {
+      throw new Error(`${tag.line}: Invalid effect component: ${attrs.name}`)
+    }
+
+    switch (attrs.name) {
+      case 'typing':
+        return this.visit_TypingEffect(tag, attrs.component)
+      default:
+        throw new Error(`${tag.line}: Unknown effect: ${attrs.name}`)
+    }
+  }
+
+  protected visit_TypingEffect(tag: Tag, component: string): Effect {
+    const attrs = this.extractTagAttrs(tag)
+    const duration = attrs.duration ?? 50
+    if (typeof duration !== 'number' || duration <= 0) {
+      throw new Error(`${tag.line}: Invalid typing duration: ${duration}`)
+    }
+
+    return {
+      type: 'effect',
+      name: 'typing',
+      component,
+      duration,
+    }
   }
 
   protected visit_Mixin(mixin: Mixin) {
@@ -184,10 +226,8 @@ export class StructureVisitor {
   private attrNames(tag: Tag) {
     if (tag.name === 'phase') {
       return PHASE_KEYS
-    } else if (tag.name === 'transition') {
-      return TRANSITION_KEYS
-    } else if (tag.name === 'override') {
-      return OVERRIDE_KEYS
+    } else if (['transition', 'override', 'effect'].includes(tag.name)) {
+      return ANIMATION_KEYS[tag.name as keyof typeof ANIMATION_KEYS]
     } else {
       const type = tag.name as ComponentType
       return sparse([
@@ -265,6 +305,12 @@ const PROPERTY_KEYS = {
   [ComponentType.Rectangle]: [],
 }
 const PHASE_KEYS = ['name']
-const TRANSITION_KEYS = ['component', 'easing', 'duration', 'from', 'to']
+
+
 const TRANSITION_PROPS = ['opacity', 'scale', 'rotate', 'translate_x', 'translate_y']
-const OVERRIDE_KEYS = ['component', ...TRANSITION_PROPS]
+
+const ANIMATION_KEYS = {
+  transition: ['component', 'easing', 'duration', 'from', 'to'],
+  override:   ['component', ...TRANSITION_PROPS],
+  effect:     ['name', 'component', 'duration'],
+}
