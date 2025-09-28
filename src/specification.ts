@@ -66,7 +66,7 @@ export interface ContainerSpecCommon extends ComponentSpecCommon {
   children?: ComponentSpec[]
 }
 
-export interface ComponentSpecCommon extends ComponentLayoutSpec {
+export interface ComponentSpecCommon extends ComponentLayoutSpec, TransitionableSpec {
   id?:      string
   preview?: boolean
   style?:   Record<string, any>
@@ -103,6 +103,16 @@ export interface ComponentLayoutSpec {
   padding_right?:  number
   padding_top?:    number
   padding_bottom?: number
+
+  transform_origin?: [number, number]
+}
+
+export interface TransitionableSpec {
+  opacity?:     number // 0 - 1
+  scale?:       number // 0 - 1
+  rotate?:      number // degrees
+  translate_x?: number // pixels
+  translate_y?: number // pixels
 }
 
 export type FlexAlign = 'start' | 'center' | 'end' | 'stretch'

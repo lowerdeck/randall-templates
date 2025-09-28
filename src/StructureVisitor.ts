@@ -265,6 +265,7 @@ export class StructureVisitor {
 
 }
 
+const TRANSITIONABLE_PROPS = ['opacity', 'scale', 'rotate', 'translate_x', 'translate_y']
 const COMMON_KEYS = [
   'id',
   'style',
@@ -301,6 +302,8 @@ const COMMON_KEYS = [
   'padding_right',
   'padding_top',
   'padding_bottom',
+
+  ...TRANSITIONABLE_PROPS
 ]
 
 const CONTAINER_TYPES = [ComponentType.ZStack, ComponentType.VStack, ComponentType.HStack]
@@ -315,11 +318,8 @@ const PROPERTY_KEYS = {
 }
 const PHASE_KEYS = ['name']
 
-
-const TRANSITION_PROPS = ['opacity', 'scale', 'rotate', 'translate_x', 'translate_y']
-
 const ANIMATION_KEYS = {
   transition: ['component', 'easing', 'duration', 'from', 'to'],
-  override:   ['component', ...TRANSITION_PROPS],
+  override:   ['component', ...TRANSITIONABLE_PROPS],
   effect:     ['name', 'component', 'duration'],
 }
