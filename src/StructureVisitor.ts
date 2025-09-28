@@ -1,5 +1,4 @@
 import { EnumUtil, isPlainObject, objectKeys, sparse, splitArray } from 'ytil'
-
 import { Animation, ComponentSpec, ComponentType, Effect, Override } from './specification'
 import { AstNode, Block, Conditional, Mixin, Tag, Text } from './types'
 import { TemplatePhase } from './types/index'
@@ -22,6 +21,9 @@ export class StructureVisitor {
   }
 
   private visit(node: AstNode): any {
+    // Skip comments.
+    if (node.type === 'Text') { return }
+
     const methodName = `visit_${node.type}` as const
     if (!(methodName in this)) {
       console.warn(`Unknown node type: ${node.type}`)
