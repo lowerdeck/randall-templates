@@ -1,4 +1,5 @@
 import { EnumUtil, isPlainObject, objectKeys, sparse, splitArray } from 'ytil'
+
 import { Animation, ComponentSpec, ComponentType, Effect, Override } from './specification'
 import { AstNode, Block, Conditional, Mixin, Tag, Text } from './types'
 import { TemplatePhase } from './types/index'
@@ -304,7 +305,7 @@ const COMMON_KEYS = [
   'padding_bottom',
 
   'transform_origin',
-  ...TRANSITIONABLE_PROPS
+  ...TRANSITIONABLE_PROPS,
 ]
 
 const CONTAINER_TYPES = [ComponentType.ZStack, ComponentType.VStack, ComponentType.HStack]
