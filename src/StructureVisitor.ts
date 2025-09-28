@@ -303,6 +303,7 @@ const COMMON_KEYS = [
   'padding_top',
   'padding_bottom',
 
+  'transform_origin',
   ...TRANSITIONABLE_PROPS
 ]
 
