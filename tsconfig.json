@@ -19,7 +19,7 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
 
-    "lib": ["ESNext", "DOM"],
+    "lib": ["ESNext"],
   },
   "include": [
     "src"
