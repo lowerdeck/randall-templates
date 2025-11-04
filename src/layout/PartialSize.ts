@@ -9,6 +9,12 @@ export class PartialSize {
   public static undefined() { return new PartialSize(undefined, undefined) }
   public static zero() { return new PartialSize(0, 0) }
 
+  public static around(sizes: PartialSize[]) {
+    const maxWidth = Math.max(...sizes.map(s => s.width ?? 0));
+    const maxHeight = Math.max(...sizes.map(s => s.height ?? 0));
+    return new PartialSize(maxWidth, maxHeight);
+  }
+
   public ceil() {
     return new PartialSize(
       this.width == null ? undefined : Math.ceil(this.width),
