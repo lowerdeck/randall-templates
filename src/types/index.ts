@@ -1,8 +1,6 @@
-import { Animation } from '../specification'
-import { Block } from './pug'
+import { Animation, ZStackSpec } from '../specification'
 
 export * from './params'
-export * from './pug'
 
 export interface TemplateConfig {
   fps:      number
@@ -11,24 +9,13 @@ export interface TemplateConfig {
   preview?: TemplatePreviewConfig
 }
 
-export interface TemplatePreviewConfig {
-  background?: string
-}
-
-export type TemplateStructure = Block
+export type TemplateRoot = ZStackSpec
 
 export interface TemplatePhase {
   name:       string
   animations: Animation[]
 }
 
-export interface RendererHook {
-  type:   RendererHookType
-  source: string
-}
-
-export enum RendererHookType {
-  BeforeLayout = 'before-layout',
-  AfterLayout = 'after-layout',
-  AfterDraw = 'after-draw'
+export interface TemplatePreviewConfig {
+  background?: string
 }

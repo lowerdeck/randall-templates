@@ -1,7 +1,3 @@
-
-
-export * from './pug'
-
 export type TemplateParameter =
   | TextParameter
   | ImageParameter
