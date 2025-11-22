@@ -1,3 +1,4 @@
+export * from './Image'
 export * from './StructureVisitor'
 export * from './Template'
 export * from './layout'

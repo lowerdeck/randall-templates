@@ -1,4 +1,4 @@
-
+import { Image } from './Image'
 
 export interface SceneSpec {
   width:  number
@@ -43,7 +43,7 @@ export interface HStackSpec extends ContainerSpecCommon {
 
 export interface ImageSpec extends ComponentSpecCommon {
   type:          ComponentType.Image
-  src:           Uint8Array<ArrayBuffer> | string
+  src:           Image | string
   aspect_ratio?: number
   resize_mode?: 'cover' | 'contain' | 'stretch'
 }
