@@ -43,7 +43,7 @@ export interface HStackSpec extends ContainerSpecCommon {
 
 export interface ImageSpec extends ComponentSpecCommon {
   type:          ComponentType.Image
-  src:           Image | string
+  src:           Image | string | null
   aspect_ratio?: number
   resize_mode?: 'cover' | 'contain' | 'stretch'
 }
