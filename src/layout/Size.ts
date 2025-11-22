@@ -9,7 +9,7 @@ export class Size {
     }
   }
 
-  public static zero = new Size(0, 0)
+  public static zero = () => new Size(0, 0)
 
   public width:  number
   public height: number
