@@ -27,7 +27,7 @@
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.20",
     "rimraf": "^6.0.1",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "jest": "^30.2.0",
