@@ -8,7 +8,6 @@ export type TemplateParameter =
   | NumberParameter
   | BooleanParameter
   | SelectParameter
-  | ObjectParameter
 
 export interface TemplateParameterCommon<T> {
   name:     string
@@ -64,7 +63,6 @@ export function validateParamValue(param: TemplateParameter, value: unknown) {
   case 'number': return validateNumberParamValue(param, value)
   case 'boolean': return validateBooleanParamValue(param, value)
   case 'select': return validateSelectParamValue(param, value)
-  case 'object': return validateObjectParamValue(param, value)
   }
 }
 
