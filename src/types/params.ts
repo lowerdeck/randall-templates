@@ -19,7 +19,8 @@ export interface TemplateParamCommon<T> {
   name:     string
   caption:  string
   optional: boolean
-  resolve: boolean
+
+  resolvers?: string
   default?: T
 }
 
