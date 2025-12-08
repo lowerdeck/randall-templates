@@ -2,21 +2,27 @@ import { isPlainObject, safeParseFloat } from 'ytil'
 
 export * from './pug'
 
-export type TemplateParameter =
+export interface TemplateParamGroup {
+  group: string
+  params: TemplateParam[]
+}
+
+
+export type TemplateParam =
   | TextParameter
   | ImageParameter
   | NumberParameter
   | BooleanParameter
   | SelectParameter
 
-export interface TemplateParameterCommon<T> {
+export interface TemplateParamCommon<T> {
   name:     string
   caption:  string
   optional: boolean
   default?: T
 }
 
-export interface TextParameter extends TemplateParameterCommon<string> {
+export interface TextParameter extends TemplateParamCommon<string> {
   type: 'text'
   min_length?: number
   max_length?: number
@@ -24,24 +30,24 @@ export interface TextParameter extends TemplateParameterCommon<string> {
   multiline: boolean
 }
 
-export interface ImageParameter extends TemplateParameterCommon<string> {
+export interface ImageParameter extends TemplateParamCommon<string> {
   type: 'image'
 }
 
-export interface NumberParameter extends TemplateParameterCommon<string> {
+export interface NumberParameter extends TemplateParamCommon<string> {
   type: 'number'
   int: boolean
   min?: number
   max?: number
 }
 
-export interface BooleanParameter extends TemplateParameterCommon<string> {
+export interface BooleanParameter extends TemplateParamCommon<string> {
   type: 'boolean'
   yes_caption?: string
   no_caption?: string
 }
 
-export interface SelectParameter extends TemplateParameterCommon<string> {
+export interface SelectParameter extends TemplateParamCommon<string> {
   type: 'select'
   choices: SelectParameterChoice[] | WellKnownSelectParameterChoices
 }
@@ -51,12 +57,12 @@ export enum WellKnownSelectParameterChoices {
   Outlet = '$outlet'
 }
 
-export interface ObjectParameter extends TemplateParameterCommon<string> {
+export interface ObjectParameter extends TemplateParamCommon<string> {
   type: 'object'
-  fields: TemplateParameter[]
+  fields: TemplateParam[]
 }
 
-export function validateParamValue(param: TemplateParameter, value: unknown) {
+export function validateParamValue(param: TemplateParam, value: unknown) {
   switch (param.type) {
   case 'text': return validateTextParamValue(param, value)
   case 'image': return validateImageParamValue(param, value)

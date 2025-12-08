@@ -1,14 +1,19 @@
 import { StructureVisitor } from './StructureVisitor'
 import { ComponentSpec, SceneSpec } from './specification'
-import { TemplateConfig, TemplateParameter, TemplatePhase, TemplateStructure } from './types'
-import { AstNode } from './types/pug'
+import {
+  AstNode,
+  TemplateConfig,
+  TemplateParamGroup,
+  TemplatePhase,
+  TemplateStructure,
+} from './types'
 
 export class Template {
 
   constructor(
     public readonly id:   string,
     public readonly config: TemplateConfig,
-    public readonly params: TemplateParameter[],
+    public readonly params: TemplateParamGroup[],
     public readonly structure: TemplateStructure,
   ) {}
 
@@ -57,7 +62,7 @@ export class Template {
     return {
       id:        this.id,
       config:    this.config,
-      variables: this.params,
+      params:    this.params,
       structure: this.structure,
     }
   }
@@ -67,6 +72,6 @@ export class Template {
 export interface TemplateSerialized {
   id:        string
   config:    TemplateConfig
-  variables: TemplateParameter[]
+  params:    TemplateParamGroup[]
   structure: AstNode
 }
