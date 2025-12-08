@@ -4,21 +4,12 @@
   "description": "Randall the Renderer templating engine.",
   "author": "Joost Lubach",
   "license": "MIT",
-  "main": "./dist/index.js",
-  "types": "./dist/types/index.d.ts",
+  "main": "./src/index.ts",
+  "types":  "./src/index.ts",
   "exports": {
-    ".": {
-      "types": "./dist/types/index.d.ts",
-      "module": "./dist/esm/index.js",
-      "default": "./dist/cjs/index.js"
-    }
+    ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "npm run clean && npm run build:tsc",
-    "build:tsc": "npm run build:tsc:esm && npm run build:tsc:cjs",
-    "build:tsc:esm": "tsc -p tsconfig.prod.json --module es2022 --outDir dist/esm --declarationDir dist/types",
-    "build:tsc:cjs": "tsc -p tsconfig.prod.json --module commonjs --outDir dist/cjs --declaration false --declarationMap false",
-    "clean": "rimraf dist",
     "lint": "eslint src --ext .ts",
     "check": "tsc -p . --noEmit",
     "test": "NODE_ENV=test jest"

@@ -1,5 +1,4 @@
 import { EnumUtil, isPlainObject, objectKeys, sparse, splitArray } from 'ytil'
-
 import { Animation, ComponentSpec, ComponentType, Effect, Override } from './specification'
 import { AstNode, Block, Conditional, Mixin, Tag, Text } from './types'
 import { TemplatePhase } from './types/index'
@@ -255,8 +254,16 @@ export class StructureVisitor {
   private evaluateExpression(node: AstNode, source: string) {
     try {
       const fn = new Function('vars', `with (vars) { return (${source}); }`)
-      return fn(this.vars)
+      const vars = new Proxy(this.vars, {
+        has: () => true,
+        get: (target, prop) => {
+          if (typeof prop !== 'string') { return undefined }
+          return target[prop]
+        }
+      })
+      return fn(vars)
     } catch (error) {
+      console.log(error)
       if (error instanceof ReferenceError) { return null }
       throw new Error(`${node.line}: Error while evaluating expression \`${source}\`: ${error}`)
     }
