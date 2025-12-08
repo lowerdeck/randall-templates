@@ -7,7 +7,6 @@ export interface TemplateParamGroup {
   params: TemplateParam[]
 }
 
-
 export type TemplateParam =
   | TextParameter
   | ImageParameter
