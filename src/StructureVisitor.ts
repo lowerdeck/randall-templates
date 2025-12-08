@@ -1,6 +1,6 @@
 import { EnumUtil, isPlainObject, objectKeys, sparse, splitArray } from 'ytil'
 import { Animation, ComponentSpec, ComponentType, Effect, Override } from './specification'
-import { AstNode, Block, Conditional, Mixin, Tag, Text } from './types'
+import { AstNode, Block, Conditional, Mixin, Tag } from './types'
 import { TemplatePhase } from './types/index'
 
 export class StructureVisitor {
@@ -259,11 +259,10 @@ export class StructureVisitor {
         get: (target, prop) => {
           if (typeof prop !== 'string') { return undefined }
           return target[prop]
-        }
+        },
       })
       return fn(vars)
     } catch (error) {
-      console.log(error)
       if (error instanceof ReferenceError) { return null }
       throw new Error(`${node.line}: Error while evaluating expression \`${source}\`: ${error}`)
     }
