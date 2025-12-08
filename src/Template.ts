@@ -17,6 +17,10 @@ export class Template {
     public readonly structure: TemplateStructure,
   ) {}
 
+  public get flatParams() {
+    return this.params.flatMap(it => it.params)
+  }
+
   public build(vars: Record<string, any>): Array<[string, SceneSpec]> {
     const specifications: Array<[string, SceneSpec]> = []
 
