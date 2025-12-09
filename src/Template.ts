@@ -12,6 +12,7 @@ export class Template {
 
   constructor(
     public readonly id:   string,
+    public readonly name: string,
     public readonly config: TemplateConfig,
     public readonly params: TemplateParamGroup[],
     public readonly structure: TemplateStructure,
