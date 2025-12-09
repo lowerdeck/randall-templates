@@ -49,8 +49,7 @@ export interface ImageSpec extends ComponentSpecCommon {
 
   // These are only for resize_mode 'cover'.
   image_placement?: 'center' | 'top' | 'bottom' | 'left' | 'right' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
-  image_offset_x?: number
-  image_offset_y?: number
+  image_offset?: [number, number]
 }
 
 export interface RectangleSpec extends ComponentSpecCommon {

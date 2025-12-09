@@ -320,7 +320,7 @@ const PROPERTY_KEYS = {
   [ComponentType.ZStack]:    [],
   [ComponentType.VStack]:    ['gap', 'align', 'justify'],
   [ComponentType.HStack]:    ['gap', 'align', 'justify'],
-  [ComponentType.Image]:     ['src', 'resize_mode'],
+  [ComponentType.Image]:     ['src', 'resize_mode', 'image_displacement', 'image_offset'],
   [ComponentType.Text]:      ['text'],
   [ComponentType.Rectangle]: [],
 }
