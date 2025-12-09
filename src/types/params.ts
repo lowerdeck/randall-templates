@@ -12,7 +12,7 @@ export type TemplateParam =
   | ImageParameter
   | NumberParameter
   | BooleanParameter
-  | SelectParameter
+  | ChoiceParameter
 
 export interface TemplateParamCommon<T> {
   name:     string
@@ -46,13 +46,14 @@ export interface BooleanParameter extends TemplateParamCommon<string> {
   no_caption?: string
 }
 
-export interface SelectParameter extends TemplateParamCommon<string> {
-  type: 'select'
-  choices: SelectParameterChoice[] | WellKnownSelectParameterChoices
+export interface ChoiceParameter extends TemplateParamCommon<string> {
+  type: 'choice'
+  choices: ParameterChoice[] | WellKnownParameterChoices
+  variant: 'select' | 'buttons'
 }
 
-export type SelectParameterChoice = string | {value: string | number, label: string}
-export enum WellKnownSelectParameterChoices {
+export type ParameterChoice = string | {value: string | number, label: string}
+export enum WellKnownParameterChoices {
   Outlet = '$outlet'
 }
 
@@ -67,7 +68,7 @@ export function validateParamValue(param: TemplateParam, value: unknown) {
   case 'image': return validateImageParamValue(param, value)
   case 'number': return validateNumberParamValue(param, value)
   case 'boolean': return validateBooleanParamValue(param, value)
-  case 'select': return validateSelectParamValue(param, value)
+  case 'choice': return validateChoiceParam(param, value)
   }
 }
 
@@ -109,7 +110,7 @@ function validateBooleanParamValue(_param: BooleanParameter, value: unknown) {
   return false
 }
 
-function validateSelectParamValue(param: SelectParameter, value: unknown) {
+function validateChoiceParam(param: ChoiceParameter, value: unknown) {
   if (typeof value !== 'string' && typeof value !== 'number') { return false }
   
   if (Array.isArray(param.choices)) {
