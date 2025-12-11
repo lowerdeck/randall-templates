@@ -11,7 +11,6 @@ import {
 export class Template {
 
   constructor(
-    public readonly id:   string,
     public readonly name: string,
     public readonly config: TemplateConfig,
     public readonly params: TemplateParamGroup[],
@@ -65,7 +64,6 @@ export class Template {
 
   public serialize(): TemplateSerialized {
     return {
-      id:        this.id,
       config:    this.config,
       params:    this.params,
       structure: this.structure,
@@ -75,7 +73,6 @@ export class Template {
 }
 
 export interface TemplateSerialized {
-  id:        string
   config:    TemplateConfig
   params:    TemplateParamGroup[]
   structure: AstNode
