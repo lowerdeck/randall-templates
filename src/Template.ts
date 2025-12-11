@@ -1,19 +1,15 @@
 import { StructureVisitor } from './StructureVisitor'
 import { ComponentSpec, SceneSpec } from './specification'
-import {
-  AstNode,
-  TemplateConfig,
-  TemplateParamGroup,
-  TemplatePhase,
-  TemplateStructure,
-} from './types'
+import { AstNode, TemplateParamGroup, TemplatePhase, TemplateStructure } from './types'
 
 export class Template {
 
   constructor(
-    public readonly name: string,
-    public readonly config: TemplateConfig,
-    public readonly params: TemplateParamGroup[],
+    public readonly name:      string,
+    public readonly fps:       number,
+    public readonly width:     number,
+    public readonly height:    number,
+    public readonly params:    TemplateParamGroup[],
     public readonly structure: TemplateStructure,
   ) {}
 
@@ -30,10 +26,9 @@ export class Template {
       specifications.push([
         phase.name,
         {
-          fps: this.config.fps,
-      
-          width:  this.config.width,
-          height: this.config.height,
+          fps:    this.fps,
+          width:  this.width,
+          height: this.height,
         
           root:       root,
           animations: phase.animations,
@@ -49,8 +44,8 @@ export class Template {
       ...vars,
     })
     const root = visitor.walk(this.structure)
-    root.width = this.config.width
-    root.height = this.config.height
+    root.width = this.width
+    root.height = this.height
     
     const phases = visitor.phases
     if (phases.length === 0) {
@@ -64,7 +59,9 @@ export class Template {
 
   public serialize(): TemplateSerialized {
     return {
-      config:    this.config,
+      fps:       this.fps,
+      width:     this.width,
+      height:    this.height,
       params:    this.params,
       structure: this.structure,
     }
@@ -73,7 +70,9 @@ export class Template {
 }
 
 export interface TemplateSerialized {
-  config:    TemplateConfig
+  fps:       number
+  width:     number
+  height:    number
   params:    TemplateParamGroup[]
   structure: AstNode
 }
