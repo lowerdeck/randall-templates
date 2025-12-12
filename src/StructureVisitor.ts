@@ -314,7 +314,7 @@ const COMMON_KEYS = [
   ...TRANSITIONABLE_PROPS,
 ]
 
-const CONTAINER_TYPES = [ComponentType.ZStack, ComponentType.VStack, ComponentType.HStack]
+const CONTAINER_TYPES = [ComponentType.ZStack, ComponentType.VStack, ComponentType.HStack, ComponentType.Image]
 const CONTAINER_KEYS = ['children']
 const PROPERTY_KEYS = {
   [ComponentType.ZStack]:    [],

@@ -41,7 +41,7 @@ export interface HStackSpec extends ContainerSpecCommon {
   type: ComponentType.HStack
 }
 
-export interface ImageSpec extends ComponentSpecCommon {
+export interface ImageSpec extends ContainerSpecCommon {
   type:          ComponentType.Image
   src:           Image | string | null
   aspect_ratio?: number
