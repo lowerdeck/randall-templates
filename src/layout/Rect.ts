@@ -32,7 +32,7 @@ export class Rect {
     }
   }
 
-  public static zero = new Rect(0, 0, 0, 0)
+  public static zero = () => new Rect(0, 0, 0, 0)
 
   public static around(rects: Rect[]) {
     const left = Math.min(...rects.map(it => it.left))
