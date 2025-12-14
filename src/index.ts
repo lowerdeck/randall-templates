@@ -1,5 +1,5 @@
 export * from './Image'
 export * from './TemplateEvaluator'
+export * from './jsep'
 export * from './layout'
-export * from './pug'
 export * from './specification'
