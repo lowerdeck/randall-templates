@@ -1,26 +1,32 @@
-import { EnumUtil, isPlainObject, objectKeys, sparse, splitArray } from 'ytil'
-import { Animation, ComponentSpec, ComponentType, Effect, Override } from './specification'
+import { EnumUtil, objectKeys, sparse, splitArray } from 'ytil'
+
+import {
+  ComponentSpec,
+  ComponentType,
+  CustomEffectSpec,
+  EffectSpec,
+  HStackSpec,
+  OverrideSpec,
+  VStackSpec,
+  ZStackSpec,
+} from './specification'
 import { AstNode, Block, Conditional, Mixin, Tag } from './types'
 import { TemplatePhase } from './types/index'
 
 export class StructureVisitor {
-
-  constructor(
-    private readonly vars: Record<string, any> = {},
-  ) {}
 
   private readonly mixins: Record<string, Mixin> = {}
   public readonly phases:  TemplatePhase[] = []
 
   public walk(node: Block): ComponentSpec {
     return {
-      type:     ComponentType.ZStack,
-      children: this.visit(node) as ComponentSpec[],
+      $type:    ComponentType.ZStack,
+      children: this.visit(node, null) as ComponentSpec[],
     }
 
   }
 
-  private visit(node: AstNode): any {
+  private visit(node: AstNode, parent: ComponentSpec | null): any {
     // Skip comments.
     if (node.type === 'Text') { return }
 
@@ -31,15 +37,15 @@ export class StructureVisitor {
     }
 
     const method = (this as any)[methodName]
-    return method.call(this, node)
+    return method.call(this, node, parent)
   }
 
-  protected visit_Block(block: Block): ComponentSpec[] {
+  protected visit_Block(block: Block, parent: ComponentSpec | null): ComponentSpec[] {
     // First visit all mixins.
     const [mixins, rest] = splitArray(block.nodes, it => it.type === 'Mixin' && !it.call)
-    mixins.forEach(it => this.visit(it))
+    mixins.forEach(it => this.visit(it, parent))
 
-    const components = rest.flatMap(it => this.visit(it) as ComponentSpec | ComponentSpec[] | null)
+    const components = rest.flatMap(it => this.visit(it, parent) as ComponentSpec | ComponentSpec[] | null)
     return sparse(components)
   }
 
@@ -54,14 +60,14 @@ export class StructureVisitor {
     }
 
     const {id, ...attrs} = this.extractTagAttrs(tag)
-    const children = this.visit(tag.block)
 
-    return {
-      type,
-      id,
-      ...attrs,
-      children,
-    } as ComponentSpec
+    const component = {$type: type, id, ...attrs} as ComponentSpec
+
+    if (isContainer(component)) {
+      component.children = this.visit(tag.block, component)
+    }
+
+    return component
   }
 
   protected visit_Phase(tag: Tag) {
@@ -77,12 +83,12 @@ export class StructureVisitor {
     }
 
     const {name} = attrs
-    const animations = tag.block.nodes.map(it => this.visit_Animation(it as Tag)) as Animation[]
+    const animations = tag.block.nodes.map(it => this.visit_Animation(it as Tag)) as EffectSpec[]
     this.phases.push({name, animations})
     return null
   }
 
-  protected visit_Animation(tag: Tag): Animation {
+  protected visit_Animation(tag: Tag): EffectSpec {
     switch (tag.name) {
     case 'transition': return this.visit_Transition(tag)
     case 'override': return this.visit_Override(tag)
@@ -107,7 +113,7 @@ export class StructureVisitor {
     }
   }
 
-  protected visit_Override(tag: Tag): Override {
+  protected visit_Override(tag: Tag): OverrideSpec {
     const attrs = this.extractTagAttrs(tag)
     if (attrs.component == null) {
       throw new Error(`${tag.line}: ${tag.line}: override() requires a component attribute`)
@@ -122,7 +128,7 @@ export class StructureVisitor {
     }
   }
 
-  protected visit_Effect(tag: Tag): Effect {
+  protected visit_Effect(tag: Tag): CustomEffectSpec {
     const attrs = this.extractTagAttrs(tag)
     if (attrs.name == null) {
       throw new Error(`${tag.line}: ${tag.line}: effect() requires a name attribute`)
@@ -146,7 +152,7 @@ export class StructureVisitor {
     }
   }
 
-  protected visit_TypingEffect(tag: Tag, component: string): Effect {
+  protected visit_TypingEffect(tag: Tag, component: string): CustomEffectSpec {
     const attrs = this.extractTagAttrs(tag)
     const duration = attrs.duration ?? 50
     if (typeof duration !== 'number' || duration <= 0) {
@@ -161,36 +167,43 @@ export class StructureVisitor {
     }
   }
 
-  protected visit_Mixin(mixin: Mixin) {
+  protected visit_Mixin(mixin: Mixin, parent: ComponentSpec) {
     if (mixin.call) {
-      return this.visit_MixinCall(mixin)
+      return this.visit_MixinCall(mixin, parent)
     } else {
       return this.visit_MixinDeclaration(mixin)
     }
   }
 
-  protected visit_MixinCall(node: Mixin) {
+  protected visit_MixinCall(node: Mixin, parent: ComponentSpec) {
     const mixin = this.mixins[node.name]
     if (mixin == null) {
       throw new Error(`${node.line}: Unknown mixin: ${node.name}`)
     }
 
     // TODO: Arguments?
-    return this.visit(mixin.block)
+    return this.visit(mixin.block, parent)
   }
 
   protected visit_MixinDeclaration(mixin: Mixin) {
     this.mixins[mixin.name] = mixin
   }
 
-  protected visit_Conditional(conditional: Conditional) {
-    const matches = this.evaluateExpression(conditional, conditional.test)
-    if (matches) {
-      return this.visit(conditional.consequent)
-    } else if (conditional.alternate != null) {
-      return this.visit(conditional.alternate)
-    } else {
-      return null
+  protected visit_Conditional(conditional: Conditional, parent: ComponentSpec) {
+    if (!isContainer(parent)) {
+      throw new Error(`${conditional.line}: Conditionals can only be used inside container components.`)
+    }
+    
+    parent.children ??= []
+
+    const consequent = this.visit(conditional.consequent, parent)
+    consequent.$if = conditional.test
+    parent.children.push(consequent)
+
+    const alternate = conditional.alternate == null ? null : this.visit(conditional.alternate, parent)
+    if (alternate != null) {
+      alternate.$if = `!(${conditional.test})`
+      parent.children.push(alternate)
     }
   }
 
@@ -201,17 +214,7 @@ export class StructureVisitor {
 
     const result: Record<string, any> = {}
     for (const {name, val} of tag.attrs) {
-      if (name.startsWith('...') && val === true) {
-        // Spread attr, evaluate the variable and merge it into the result.
-        const obj = this.evaluateExpression(tag, name.slice(3))
-        if (!isPlainObject(obj)) {
-          throw new Error(`${tag.line}: Invalid spread object: ${name}`)
-        }
-
-        Object.assign(result, obj)
-      } else {
-        result[name] = this.transformAttr(tag, val)
-      }
+      result[name] = this.transformAttr(tag, val)
     }
 
     // Remove unknown attribute values.
@@ -225,11 +228,22 @@ export class StructureVisitor {
   }
 
   private transformAttr(tag: Tag, value: any) {
-    if (typeof value !== 'string') {
-      return value
-    } else {
-      return this.evaluateExpression(tag, value)
+    if (typeof value !== 'string') { return value }
+
+    if (value === 'true' || value === 'false') {
+      return value === 'true' ? true : false
     }
+    if (/^-?\d+(\.\d+)?$/.test(value)) {
+      return parseFloat(value)
+    }
+    if (value.startsWith('\'') && value.endsWith('\'')) {
+      return value.slice(1, -1).replace(/\\'/g, '\'')
+    }
+    if (value.startsWith('"') && value.endsWith('"')) {
+      return JSON.parse(value)
+    }
+
+    return {$: value}
   }
 
   private attrNames(tag: Tag) {
@@ -249,27 +263,10 @@ export class StructureVisitor {
 
   // #endregion
 
-  // #region Expressions & scripts
+}
 
-  private evaluateExpression(node: AstNode, source: string) {
-    try {
-      const fn = new Function('vars', `with (vars) { return (${source}); }`)
-      const vars = new Proxy(this.vars, {
-        has: () => true,
-        get: (target, prop) => {
-          if (typeof prop !== 'string') { return undefined }
-          return target[prop]
-        },
-      })
-      return fn(vars)
-    } catch (error) {
-      if (error instanceof ReferenceError) { return null }
-      throw new Error(`${node.line}: Error while evaluating expression \`${source}\`: ${error}`)
-    }
-  }
-
-  // #endregion
-
+function isContainer(component: ComponentSpec): component is ZStackSpec | VStackSpec | HStackSpec {
+  return CONTAINER_TYPES.includes(component.$type)
 }
 
 const TRANSITIONABLE_PROPS = ['opacity', 'scale', 'rotate', 'translate_x', 'translate_y']

@@ -1,5 +1,4 @@
-import { Animation } from '../specification'
-import { Block } from './pug'
+import { EffectSpec } from '../specification'
 
 export * from './params'
 export * from './pug'
@@ -8,11 +7,9 @@ export interface TemplatePreviewConfig {
   background?: string
 }
 
-export type TemplateStructure = Block
-
 export interface TemplatePhase {
   name:       string
-  animations: Animation[]
+  animations: EffectSpec[]
 }
 
 export interface RendererHook {

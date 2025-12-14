@@ -5,8 +5,8 @@ export interface SceneSpec {
   height: number
   fps:    number
 
-  root:       ComponentSpec
-  animations: Animation[]
+  root:    ComponentSpec
+  effects: EffectSpec[]
 }
 
 export type ComponentSpec =
@@ -30,19 +30,19 @@ export enum ComponentType {
 }
 
 export interface ZStackSpec extends ContainerSpecCommon {
-  type: ComponentType.ZStack
+  $type: ComponentType.ZStack
 }
 
 export interface VStackSpec extends ContainerSpecCommon {
-  type: ComponentType.VStack
+  $type: ComponentType.VStack
 }
 
 export interface HStackSpec extends ContainerSpecCommon {
-  type: ComponentType.HStack
+  $type: ComponentType.HStack
 }
 
 export interface ImageSpec extends ContainerSpecCommon {
-  type:          ComponentType.Image
+  $type:         ComponentType.Image
   src:           Image | string | null
   aspect_ratio?: number
   resize_mode?: 'cover' | 'contain' | 'stretch'
@@ -53,11 +53,11 @@ export interface ImageSpec extends ContainerSpecCommon {
 }
 
 export interface RectangleSpec extends ComponentSpecCommon {
-  type: ComponentType.Rectangle
+  $type: ComponentType.Rectangle
 }
 
 export interface TextSpec extends ComponentSpecCommon {
-  type:        ComponentType.Text
+  $type:       ComponentType.Text
   max_width?:  number
   max_height?: number
   text?:       string
@@ -65,6 +65,8 @@ export interface TextSpec extends ComponentSpecCommon {
 
 //------
 // Common props
+
+type Attribute<T> = T | {$: string}
 
 export interface ContainerSpecCommon extends ComponentSpecCommon {
   children?: ComponentSpec[]
@@ -74,49 +76,51 @@ export interface ComponentSpecCommon extends ComponentLayoutSpec, Transitionable
   id?:      string
   preview?: boolean
   style?:   Record<string, any>
+
+  $if?: string
 }
 
 export interface ComponentLayoutSpec {
-  inset?:  number
-  left?:   number
-  right?:  number
-  top?:    number
-  bottom?: number
+  inset?:  Attribute<number>
+  left?:   Attribute<number>
+  right?:  Attribute<number>
+  top?:    Attribute<number>
+  bottom?: Attribute<number>
   
-  width?:  number
-  max_width?:  number
-  min_width?:  number
+  width?:  Attribute<number>
+  max_width?:  Attribute<number>
+  min_width?:  Attribute<number>
   
-  height?: number
-  max_height?: number
-  min_height?: number
+  height?: Attribute<number>
+  max_height?: Attribute<number>
+  min_height?: Attribute<number>
 
-  flex?:       number
-  flex_grow?:   number
-  flex_shrink?: number
-  flex_basis?:  number | 'auto'
+  flex?:       Attribute<number>
+  flex_grow?:   Attribute<number>
+  flex_shrink?: Attribute<number>
+  flex_basis?:  Attribute<number | 'auto'>
 
-  gap?:     number
-  align?:   FlexAlign
-  justify?: FlexJustify
+  gap?:     Attribute<number>
+  align?:   Attribute<FlexAlign>
+  justify?: Attribute<FlexJustify>
 
-  padding?:        number
-  padding_x?:      number
-  padding_y?:      number
-  padding_left?:   number
-  padding_right?:  number
-  padding_top?:    number
-  padding_bottom?: number
+  padding?:        Attribute<number>
+  padding_x?:      Attribute<number>
+  padding_y?:      Attribute<number>
+  padding_left?:   Attribute<number>
+  padding_right?:  Attribute<number>
+  padding_top?:    Attribute<number>
+  padding_bottom?: Attribute<number>
 
-  transform_origin?: [number, number]
+  transform_origin?: Attribute<[number, number]>
 }
 
 export interface TransitionableSpec {
-  opacity?:     number // 0 - 1
-  scale?:       number // 0 - 1
-  rotate?:      number // degrees
-  translate_x?: number // pixels
-  translate_y?: number // pixels
+  opacity?:     Attribute<number> // 0 - 1
+  scale?:       Attribute<number> // 0 - 1
+  rotate?:      Attribute<number> // degrees
+  translate_x?: Attribute<number> // pixels
+  translate_y?: Attribute<number> // pixels
 }
 
 export type FlexAlign = 'start' | 'center' | 'end' | 'stretch'
@@ -125,9 +129,9 @@ export type FlexJustify = 'start' | 'center' | 'end' | 'space-between'
 //------
 // Transitions
 
-export type Animation = Transition | Override | Effect
+export type EffectSpec = TransitionSpec | OverrideSpec | CustomEffectSpec
 
-export interface Transition {
+export interface TransitionSpec {
   component: string
   duration:  number
   easing:    'linear' | 'ease-in' | 'ease-out' | 'ease-in-out'
@@ -135,7 +139,7 @@ export interface Transition {
   to:        Record<TransitionProp, number>
 }
 
-export interface Override extends Record<TransitionProp, number> {
+export interface OverrideSpec extends Record<TransitionProp, number> {
   component: string
 }
 
@@ -146,7 +150,7 @@ export type TransitionProp =
   | 'translateX'
   | 'translateY'
 
-export type Effect = TypingEffect
+export type CustomEffectSpec = TypingEffect
 
 export interface TypingEffect {
   type:      'effect',
