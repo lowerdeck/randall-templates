@@ -1,4 +1,5 @@
 import { EnumUtil, objectKeys, sparse, splitArray } from 'ytil'
+
 import {
   ComponentSpec,
   ComponentType,
@@ -18,14 +19,16 @@ export class StructureVisitor {
   public readonly phases:  PhaseSpec[] = []
 
   public walk(node: Block): ComponentSpec {
-    return {
+    const root: ZStackSpec = {
       $type:    ComponentType.ZStack,
-      children: this.visit(node, null) as ComponentSpec[],
+      children: [],
     }
-
+    this.visit(node, root)
+    
+    return root
   }
 
-  private visit(node: AstNode, parent: ComponentSpec | null): any {
+  private visit(node: AstNode, parent: ComponentSpec): any {
     // Skip comments.
     if (node.type === 'Text') { return }
 
@@ -39,7 +42,7 @@ export class StructureVisitor {
     return method.call(this, node, parent)
   }
 
-  protected visit_Block(block: Block, parent: ComponentSpec | null): ComponentSpec[] {
+  protected visit_Block(block: Block, parent: ComponentSpec): ComponentSpec[] {
     // First visit all mixins.
     const [mixins, rest] = splitArray(block.nodes, it => it.type === 'Mixin' && !it.call)
     mixins.forEach(it => this.visit(it, parent))
@@ -63,7 +66,7 @@ export class StructureVisitor {
     const component = {$type: type, id, ...attrs} as ComponentSpec
 
     if (isContainer(component)) {
-      component.children = this.visit(tag.block, component)
+      this.visit(tag.block, component)
     }
 
     return component
