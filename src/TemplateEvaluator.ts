@@ -1,6 +1,6 @@
+import { isArray, mapValues } from 'lodash'
 import { Attribute } from 'templates'
-import { deepMapValues, isFunction } from 'ytil'
-
+import { isFunction, isPlainObject } from 'ytil'
 import { blacklist, global, jsep } from './jsep'
 
 // Type declarations for jsep plugin types
@@ -19,11 +19,11 @@ interface Property extends jsep.Expression {
 
 export class TemplateEvaluator {
 
-  private readonly options: Required<EvalOptions>
+  private readonly options: Required<TemplateEvaluatorOptions>
 
   constructor(
     private readonly data: Record<string, any>,
-    options: EvalOptions = {},
+    options: TemplateEvaluatorOptions = {},
   ) {
     this.options = {
       maxLen:         options.maxLen ?? 10_000,
@@ -35,12 +35,33 @@ export class TemplateEvaluator {
 
   // #region Interface
 
-  public evaluateStructure<T extends object>(tree: T): T {
-    return deepMapValues(tree, val => {
+  public evaluateStructure<T extends object>(tree: T, options: EvaluateStructureOptions = {}): T {
+    const iter = (val: unknown): unknown => {
       if (Attribute.isDynamic(val)) {
-        return this.evaluateExpression(val.$)
+        const value = this.evaluateExpression(val.$)
+        options.onExpression?.(val.$, value)
+        return value
+      } else if (isPlainObject(val)) {
+        if ('$if' in val && !this.evaluateExpression(val.$if)) {
+          return null
+        } else {
+          return mapValues(val, iter)
+        }
+      } else if (isArray(val)) {
+        const result: unknown[] = []
+        for (const item of val) {
+          if (isPlainObject(item) && '$if' in item && !this.evaluateExpression(item.$if)) {
+            continue
+          }
+
+          result.push(iter(item))          
+        }
+        return result
+      } else {
+        return val
       }
-    })
+    }
+    return iter(tree) as T
   }
 
   public evaluateExpression<T>(expression: string): T {
@@ -223,46 +244,38 @@ export class TemplateEvaluator {
       }
     }
 
-    case 'LogicalExpression': {
+    case 'LogicalExpression': case 'BinaryExpression': {
       const expr = node as jsep.BinaryExpression
+      const left = this.evaluateNode(expr.left, depth + 1)
 
+      // For logical expressions, don't evaluate right until we need to.
       if (expr.operator === '&&') {
-        const left = this.evaluateNode(expr.left, depth + 1)
         return left && this.evaluateNode(expr.right, depth + 1)
       }
       if (expr.operator === '||') {
-        const left = this.evaluateNode(expr.left, depth + 1)
         return left || this.evaluateNode(expr.right, depth + 1)
       }
       if (expr.operator === '??') {
-        const left = this.evaluateNode(expr.left, depth + 1)
-        return (left === null || left === undefined)
-          ? this.evaluateNode(expr.right, depth + 1)
-          : left
+        return left ?? this.evaluateNode(expr.right, depth + 1)
       }
-      throw new Error(`Bad logical op: ${expr.operator}`)
-    }
 
-    case 'BinaryExpression': {
-      const expr = node as jsep.BinaryExpression
-      const l = this.evaluateNode(expr.left, depth + 1)
-      const r = this.evaluateNode(expr.right, depth + 1)
-
+      // Other operators, please do.
+      const right = this.evaluateNode(expr.right, depth + 1) 
       switch (expr.operator) {
-      case '+': return l + r
-      case '-': return l - r
-      case '*': return l * r
-      case '/': return l / r
-      case '%': return l % r
-      case '**': return l ** r
-      case '==': return l == r
-      case '!=': return l != r
-      case '===': return l === r
-      case '!==': return l !== r
-      case '<': return l < r
-      case '<=': return l <= r
-      case '>': return l > r
-      case '>=': return l >= r
+      case '+': return left + right
+      case '-': return left - right
+      case '*': return left * right
+      case '/': return left / right
+      case '%': return left % right
+      case '**': return left ** right
+      case '==': return left == right
+      case '!=': return left != right
+      case '===': return left === right
+      case '!==': return left !== right
+      case '<': return left < right
+      case '<=': return left <= right
+      case '>': return left > right
+      case '>=': return left >= right
       default: throw new Error(`Bad binary op: ${node.operator}`)
       }
     }
@@ -351,9 +364,13 @@ export class TemplateEvaluator {
 
 }
 
-export interface EvalOptions {
+export interface TemplateEvaluatorOptions {
   maxLen?: number
   maxDepth?: number
   maxNodes?: number
   nullSafeMember?: boolean
+}
+
+export interface EvaluateStructureOptions {
+  onExpression?: (expression: string, evaluated: any) => void
 }
