@@ -1,5 +1,4 @@
 import { EnumUtil, objectKeys, sparse, splitArray } from 'ytil'
-
 import {
   ComponentSpec,
   ComponentType,
@@ -7,16 +6,16 @@ import {
   EffectSpec,
   HStackSpec,
   OverrideSpec,
+  PhaseSpec,
   VStackSpec,
   ZStackSpec,
-} from './specification'
+} from '../specification'
 import { AstNode, Block, Conditional, Mixin, Tag } from './types'
-import { TemplatePhase } from './types/index'
 
 export class StructureVisitor {
 
   private readonly mixins: Record<string, Mixin> = {}
-  public readonly phases:  TemplatePhase[] = []
+  public readonly phases:  PhaseSpec[] = []
 
   public walk(node: Block): ComponentSpec {
     return {
@@ -83,8 +82,8 @@ export class StructureVisitor {
     }
 
     const {name} = attrs
-    const animations = tag.block.nodes.map(it => this.visit_Animation(it as Tag)) as EffectSpec[]
-    this.phases.push({name, animations})
+    const effects = tag.block.nodes.map(it => this.visit_Animation(it as Tag)) as EffectSpec[]
+    this.phases.push({name, effects})
     return null
   }
 

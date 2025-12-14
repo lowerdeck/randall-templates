@@ -1,6 +1,7 @@
+import { TemplateParamGroup } from '../params'
+import { ComponentSpec, PhaseSpec } from '../specification'
 import { StructureVisitor } from './StructureVisitor'
-import { ComponentSpec } from './specification'
-import { Block, TemplateParamGroup, TemplatePhase } from './types'
+import { Block } from './types'
 
 export class PugTemplate {
 
@@ -17,7 +18,7 @@ export class PugTemplate {
     return this.params.flatMap(it => it.params)
   }
 
-  public resolve(): [ComponentSpec, TemplatePhase[]] {
+  public resolve(): [ComponentSpec, PhaseSpec[]] {
     const visitor = new StructureVisitor()
     const root = visitor.walk(this.structure)
     root.width = this.width
@@ -26,8 +27,8 @@ export class PugTemplate {
     const phases = visitor.phases
     if (phases.length === 0) {
       phases.push({
-        name:       'main',
-        animations: [],
+        name:    'main',
+        effects: [],
       })
     }
     return [root, phases]

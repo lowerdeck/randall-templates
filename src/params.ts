@@ -1,7 +1,5 @@
 import { isPlainObject, safeParseFloat } from 'ytil'
 
-export * from './pug'
-
 export interface TemplateParamGroup {
   group: string
   params: TemplateParam[]

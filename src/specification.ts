@@ -1,3 +1,4 @@
+import { isPlainObject } from 'ytil'
 import { Image } from './Image'
 
 export interface SceneSpec {
@@ -66,7 +67,16 @@ export interface TextSpec extends ComponentSpecCommon {
 //------
 // Common props
 
-type Attribute<T> = T | {$: string}
+export type Attribute<T> = T | {$: string}
+
+export namespace Attribute {
+
+  export function isDynamic(value: any): value is {$: string} {
+    if (!isPlainObject(value)) { return false }
+    return typeof value.$ === 'string'
+  }
+
+}
 
 export interface ContainerSpecCommon extends ComponentSpecCommon {
   children?: ComponentSpec[]
@@ -127,7 +137,13 @@ export type FlexAlign = 'start' | 'center' | 'end' | 'stretch'
 export type FlexJustify = 'start' | 'center' | 'end' | 'space-between'
 
 //------
-// Transitions
+// Phases
+
+
+export interface PhaseSpec {
+  name:    string
+  effects: EffectSpec[]
+}
 
 export type EffectSpec = TransitionSpec | OverrideSpec | CustomEffectSpec
 
