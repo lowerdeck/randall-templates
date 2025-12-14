@@ -1,6 +1,5 @@
 export * from './Image'
 export * from './evaluate'
 export * from './layout'
-export * from './params'
 export * from './pug'
 export * from './specification'
