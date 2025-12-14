@@ -1,6 +1,8 @@
+import jsepObject from '@jsep-plugin/object'
 import jsep from 'jsep'
 import { isFunction, objectEntries } from 'ytil'
 
+jsep.plugins.register(jsepObject)
 jsep.addBinaryOp('??', 1)
 jsep.right_associative.add('??')
 

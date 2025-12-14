@@ -1,6 +1,21 @@
 import { Attribute } from 'templates'
 import { deepMapValues, isFunction } from 'ytil'
+
 import { blacklist, global, jsep } from './jsep'
+
+// Type declarations for jsep plugin types
+interface ObjectExpression extends jsep.Expression {
+  type: 'ObjectExpression'
+  properties: Property[]
+}
+
+interface Property extends jsep.Expression {
+  type: 'Property'
+  computed: boolean
+  key: jsep.Expression
+  shorthand: boolean
+  value?: jsep.Expression
+}
 
 export class TemplateEvaluator {
 
@@ -20,20 +35,20 @@ export class TemplateEvaluator {
 
   // #region Interface
 
-  public evaluateTree<T extends object>(tree: T): T {
+  public evaluateStructure<T extends object>(tree: T): T {
     return deepMapValues(tree, val => {
       if (Attribute.isDynamic(val)) {
-        return this.evaluate(val.$)
+        return this.evaluateExpression(val.$)
       }
     })
   }
 
-  public evaluate<T>(expression: string): T {
+  public evaluateExpression<T>(expression: string): T {
     if (expression.length > this.options.maxLen) {
       throw new Error(`Expression too long (>${this.options.maxLen})`)
     }
 
-    const ast = jsep(expression)
+    const ast = jsep(`(${expression})`)
 
     // Validate + gather node count/depth
     const stats = {nodes: 0}
@@ -135,6 +150,31 @@ export class TemplateEvaluator {
 
       for (const arg of expr.arguments ?? []) {
         this.validate(arg, stats, depth + 1)
+      }
+      return
+    }
+
+    case 'ArrayExpression': {
+      const expr = node as jsep.ArrayExpression
+      for (const element of expr.elements ?? []) {
+        if (element !== null) {
+          this.validate(element, stats, depth + 1)
+        }
+      }
+      return
+    }
+
+    case 'ObjectExpression': {
+      const expr = node as ObjectExpression
+      for (const prop of expr.properties ?? []) {
+        // Validate property key if it's computed
+        if (prop.computed && prop.key) {
+          this.validate(prop.key, stats, depth + 1)
+        }
+        // Validate property value
+        if (prop.value) {
+          this.validate(prop.value, stats, depth + 1)
+        }
       }
       return
     }
@@ -264,6 +304,42 @@ export class TemplateEvaluator {
         this.evaluateNode(a, depth + 1),
       )
       return fn(...args)
+    }
+
+    case 'ArrayExpression': {
+      const expr = node as jsep.ArrayExpression
+      return (expr.elements ?? []).map(element =>
+        element !== null ? this.evaluateNode(element, depth + 1) : null,
+      )
+    }
+
+    case 'ObjectExpression': {
+      const expr = node as ObjectExpression
+      const result: Record<string, any> = {}
+      
+      for (const prop of expr.properties ?? []) {
+        // Get the property key
+        let key: string
+        if (prop.computed && prop.key) {
+          // Computed property like {[expr]: value}
+          key = String(this.evaluateNode(prop.key, depth + 1))
+        } else if (prop.key?.type === 'Identifier') {
+          // Regular property like {foo: value}
+          key = prop.key.name as string
+        } else if (prop.key?.type === 'Literal') {
+          // Quoted property like {"foo": value}
+          key = String(prop.key.value)
+        } else {
+          throw new Error('Invalid object property key')
+        }
+
+        // Get the property value
+        if (prop.value) {
+          result[key] = this.evaluateNode(prop.value, depth + 1)
+        }
+      }
+      
+      return result
     }
 
     default:
