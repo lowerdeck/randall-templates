@@ -2,6 +2,7 @@ import { isArray, mapValues } from 'lodash'
 import { Attribute } from 'templates'
 import { isFunction, isPlainObject } from 'ytil'
 import { blacklist, global, jsep } from './jsep'
+import { ComponentSpec } from './specification'
 
 // Type declarations for jsep plugin types
 interface ObjectExpression extends jsep.Expression {
@@ -35,7 +36,7 @@ export class TemplateEvaluator {
 
   // #region Interface
 
-  public evaluateStructure<T extends object>(tree: T, options: EvaluateStructureOptions = {}): T {
+  public evaluateStructure<T extends object>(tree: T, options: EvaluateStructureOptions = {}): Evaluated<T> {
     const iter = (val: unknown): unknown => {
       if (Attribute.isDynamic(val)) {
         const value = this.evaluateExpression(val.$)
@@ -48,20 +49,20 @@ export class TemplateEvaluator {
           return mapValues(val, iter)
         }
       } else if (isArray(val)) {
-        const result: unknown[] = []
-        for (const item of val) {
+        return val.map(item => {
           if (isPlainObject(item) && '$if' in item && !this.evaluateExpression(item.$if)) {
-            continue
+            // If components are optional, return `undefined` such that the xpaths don't mess up.
+            // The preview and renderer should simply skip them.
+            return undefined
+          } else {
+            return iter(item)
           }
-
-          result.push(iter(item))          
-        }
-        return result
+        })
       } else {
         return val
       }
     }
-    return iter(tree) as T
+    return iter(tree) as Evaluated<T>
   }
 
   public evaluateExpression<T>(expression: string): T {
@@ -362,6 +363,18 @@ export class TemplateEvaluator {
 
   // #endregion
 
+}
+
+type evaluate<T> = (
+    T extends infer C extends ComponentSpec ? Evaluated<C> | undefined :
+    T extends Array<infer C extends ComponentSpec> ? Array<Evaluated<C> | undefined> :
+    T extends Attribute<infer R> ? R :
+    T extends Array<infer I> ? Array<Evaluated<I>> :
+    evaluate<T>
+)
+
+export type Evaluated<T> = {
+  [K in keyof T]: evaluate<T[K]>
 }
 
 export interface TemplateEvaluatorOptions {
