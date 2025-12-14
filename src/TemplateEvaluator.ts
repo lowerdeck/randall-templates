@@ -65,11 +65,14 @@ export class TemplateEvaluator {
     return iter(tree) as Evaluated<T>
   }
 
-  public evaluateExpression<T>(expression: string): T {
+  public evaluateExpression<T>(expression: string): T | null {
+    expression = expression.trim()
+    if (expression === '') { return null }
+
     if (expression.length > this.options.maxLen) {
       throw new Error(`Expression too long (>${this.options.maxLen})`)
     }
-
+    
     const ast = jsep(`(${expression})`)
 
     // Validate + gather node count/depth
