@@ -1,5 +1,5 @@
 export * from './Image'
-export * from './evaluate'
+export * from './TemplateEvaluator'
 export * from './layout'
 export * from './pug'
 export * from './specification'
