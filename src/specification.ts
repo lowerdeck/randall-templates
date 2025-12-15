@@ -152,6 +152,25 @@ export interface TransitionableSpec {
 export type FlexAlign = 'start' | 'center' | 'end' | 'stretch'
 export type FlexJustify = 'start' | 'center' | 'end' | 'space-between'
 
+export function emptyComponent(type: ContainerType): ContainerSpec
+export function emptyComponent(type: ComponentType): ComponentSpec
+export function emptyComponent(type: ComponentType): ComponentSpec {
+  switch (type) {
+  case ComponentType.ZStack:
+    return {$type: ComponentType.ZStack, children: []}
+  case ComponentType.HStack:
+    return {$type: ComponentType.HStack, children: []}
+  case ComponentType.VStack:
+    return {$type: ComponentType.VStack, children: []}
+  case ComponentType.Text:
+    return {$type: ComponentType.Text, text: null}
+  case ComponentType.Image:
+    return {$type: ComponentType.Image, src: null, children: []}
+  default:
+    throw new Error(`Unknown component type: ${type}`)
+  }
+}
+
 //------
 // Phases
 
