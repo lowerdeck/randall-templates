@@ -95,7 +95,7 @@ export namespace Attribute {
 }
 
 export interface ContainerSpecCommon extends ComponentSpecCommon {
-  children?: ComponentSpec[]
+  children: ComponentSpec[]
 }
 
 export interface ComponentSpecCommon extends ComponentLayoutSpec, TransitionableSpec {
