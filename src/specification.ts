@@ -30,6 +30,24 @@ export enum ComponentType {
   HStack = 'hstack',
 }
 
+export type ContainerType =
+  | ComponentType.ZStack
+  | ComponentType.VStack
+  | ComponentType.HStack
+  | ComponentType.Image
+
+export function isContainerType(type: ComponentType): type is ContainerType {
+  if (type === ComponentType.ZStack) { return true }
+  if (type === ComponentType.VStack) { return true }
+  if (type === ComponentType.HStack) { return true }
+  if (type === ComponentType.Image) { return true }
+  return false
+}
+
+export function isContainer(spec: ComponentSpec): spec is ContainerSpec {
+  return isContainerType(spec.$type)
+}
+
 export interface ZStackSpec extends ContainerSpecCommon {
   $type: ComponentType.ZStack
 }
@@ -58,10 +76,8 @@ export interface RectangleSpec extends ComponentSpecCommon {
 }
 
 export interface TextSpec extends ComponentSpecCommon {
-  $type:       ComponentType.Text
-  max_width?:  number
-  max_height?: number
-  text?:       string
+  $type: ComponentType.Text
+  text:  string | null
 }
 
 //------
