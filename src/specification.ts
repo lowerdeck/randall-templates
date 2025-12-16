@@ -1,4 +1,5 @@
 import { isPlainObject } from 'ytil'
+
 import { Image } from './Image'
 
 export interface SceneSpec {
@@ -166,6 +167,8 @@ export function emptyComponent(type: ComponentType): ComponentSpec {
     return {$type: ComponentType.Text, text: null}
   case ComponentType.Image:
     return {$type: ComponentType.Image, src: null, children: []}
+  case ComponentType.Rectangle:
+    return {$type: ComponentType.Rectangle}
   default:
     throw new Error(`Unknown component type: ${type}`)
   }
