@@ -1,5 +1,4 @@
 import { isPlainObject } from 'ytil'
-
 import { Image } from './Image'
 
 export interface SceneSpec {
@@ -7,7 +6,7 @@ export interface SceneSpec {
   height: number
   fps:    number
 
-  root:    ComponentSpec
+  root:    ZStackSpec
   effects: EffectSpec[]
 }
 
@@ -63,7 +62,7 @@ export interface HStackSpec extends ContainerSpecCommon {
 
 export interface ImageSpec extends ContainerSpecCommon {
   $type:         ComponentType.Image
-  src:           Image | string | null
+  image:         Image | string | null
   aspect_ratio?: number
   resize_mode?: 'cover' | 'contain' | 'stretch'
 
@@ -166,7 +165,7 @@ export function emptyComponent(type: ComponentType): ComponentSpec {
   case ComponentType.Text:
     return {$type: ComponentType.Text, text: null}
   case ComponentType.Image:
-    return {$type: ComponentType.Image, src: null, children: []}
+    return {$type: ComponentType.Image, image: null, children: []}
   case ComponentType.Rectangle:
     return {$type: ComponentType.Rectangle}
   default:
