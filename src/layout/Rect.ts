@@ -82,6 +82,18 @@ export class Rect {
     )
   }
 
+  public intersects(other: Rect) {
+    if (this.right < other.left || this.left >= other.right) { return false }
+    if (this.bottom < other.top || this.top >= other.bottom) { return false }
+    return true
+  }
+
+  public contains(point: Vector) {
+    if (point.x < this.left || point.x >= this.right) { return false }
+    if (point.y < this.top || point.y >= this.bottom) { return false }
+    return true
+  }
+
   //------
   // Derived
 
