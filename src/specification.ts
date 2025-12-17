@@ -72,7 +72,7 @@ export interface ImageSpec extends ContainerSpecCommon {
 
 export interface TemplateImage {
   type: string
-  binary: Uint8Array
+  binary: Uint8Array<ArrayBuffer>
 }
 
 export interface RectangleSpec extends ComponentSpecCommon {
