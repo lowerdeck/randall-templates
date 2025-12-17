@@ -1,5 +1,4 @@
 import { isPlainObject } from 'ytil'
-import { Image } from './Image'
 
 export interface SceneSpec {
   width:  number
@@ -62,13 +61,18 @@ export interface HStackSpec extends ContainerSpecCommon {
 
 export interface ImageSpec extends ContainerSpecCommon {
   $type:         ComponentType.Image
-  image:         Image | string | null
+  image:         TemplateImage | string | null
   aspect_ratio?: number
   resize_mode?: 'cover' | 'contain' | 'stretch'
 
   // These are only for resize_mode 'cover'.
   image_placement?: 'center' | 'top' | 'bottom' | 'left' | 'right' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
   image_offset?: [number, number]
+}
+
+export interface TemplateImage {
+  type: string
+  binary: Uint8Array
 }
 
 export interface RectangleSpec extends ComponentSpecCommon {
