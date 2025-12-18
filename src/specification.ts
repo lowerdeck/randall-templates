@@ -103,9 +103,8 @@ export interface ContainerSpecCommon extends ComponentSpecCommon {
 }
 
 export interface ComponentSpecCommon extends ComponentLayoutSpec, TransitionableSpec {
-  id?:      string
-  preview?: boolean
-  style?:   Record<string, any>
+  id?:   string
+  style: Record<string, any>
 
   $if?: string
 }
@@ -161,17 +160,17 @@ export function emptyComponent(type: ComponentType): ComponentSpec
 export function emptyComponent(type: ComponentType): ComponentSpec {
   switch (type) {
   case ComponentType.ZStack:
-    return {$type: ComponentType.ZStack, children: []}
+    return {$type: ComponentType.ZStack, style: {}, children: []}
   case ComponentType.HStack:
-    return {$type: ComponentType.HStack, children: []}
+    return {$type: ComponentType.HStack, style: {}, children: []}
   case ComponentType.VStack:
-    return {$type: ComponentType.VStack, children: []}
+    return {$type: ComponentType.VStack, style: {}, children: []}
   case ComponentType.Text:
-    return {$type: ComponentType.Text, text: null}
+    return {$type: ComponentType.Text, style: {}, text: null}
   case ComponentType.Image:
-    return {$type: ComponentType.Image, image: null, children: []}
+    return {$type: ComponentType.Image, style: {}, image: null, children: []}
   case ComponentType.Rectangle:
-    return {$type: ComponentType.Rectangle}
+    return {$type: ComponentType.Rectangle, style: {}}
   default:
     throw new Error(`Unknown component type: ${type}`)
   }
