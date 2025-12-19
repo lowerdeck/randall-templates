@@ -47,15 +47,21 @@ export function isContainer(spec: ComponentSpec): spec is ContainerSpec {
   return isContainerType(spec.$type)
 }
 
+export interface StackSpecCommon extends ContainerSpecCommon {
+  align?:      Attribute<FlexAlign>
+  justify?:    Attribute<FlexJustify>
+  gap?:        Attribute<number>
+}
+
 export interface ZStackSpec extends ContainerSpecCommon {
   $type: ComponentType.ZStack
 }
 
-export interface VStackSpec extends ContainerSpecCommon {
+export interface VStackSpec extends StackSpecCommon {
   $type: ComponentType.VStack
 }
 
-export interface HStackSpec extends ContainerSpecCommon {
+export interface HStackSpec extends StackSpecCommon {
   $type: ComponentType.HStack
 }
 
@@ -129,9 +135,7 @@ export interface ComponentLayoutSpec {
   flex_shrink?: Attribute<number>
   flex_basis?:  Attribute<number | 'auto'>
 
-  gap?:     Attribute<number>
-  align?:   Attribute<FlexAlign>
-  justify?: Attribute<FlexJustify>
+  align_self?: Attribute<FlexAlign>
 
   padding?:        Attribute<number>
   padding_x?:      Attribute<number>
@@ -152,8 +156,19 @@ export interface TransitionableSpec {
   translate_y?: Attribute<number> // pixels
 }
 
-export type FlexAlign = 'start' | 'center' | 'end' | 'stretch'
-export type FlexJustify = 'start' | 'center' | 'end' | 'space-between'
+export enum FlexAlign {
+  Start = 'start',
+  Center = 'center',
+  End = 'end',
+  Stretch = 'stretch',
+}
+
+export enum FlexJustify {
+  Start = 'start',
+  Center = 'center',
+  End = 'end',
+  SpaceBetween = 'space-between',
+}
 
 export function emptyComponent(type: ContainerType): ContainerSpec
 export function emptyComponent(type: ComponentType): ComponentSpec
