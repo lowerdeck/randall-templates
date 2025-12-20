@@ -109,7 +109,7 @@ export interface ContainerSpecCommon extends ComponentSpecCommon {
 }
 
 export interface ComponentSpecCommon extends ComponentLayoutSpec, TransitionableSpec {
-  id?:   string
+  id:    string
   style: Record<string, any>
 
   $if?: string
@@ -170,22 +170,22 @@ export enum FlexJustify {
   SpaceBetween = 'space-between',
 }
 
-export function emptyComponent(type: ContainerType): ContainerSpec
-export function emptyComponent(type: ComponentType): ComponentSpec
-export function emptyComponent(type: ComponentType): ComponentSpec {
+export function emptyComponent(type: ContainerType, id: string): ContainerSpec
+export function emptyComponent(type: ComponentType, id: string): ComponentSpec
+export function emptyComponent(type: ComponentType, id: string): ComponentSpec {
   switch (type) {
   case ComponentType.ZStack:
-    return {$type: ComponentType.ZStack, style: {}, children: []}
+    return {$type: ComponentType.ZStack, id, style: {}, children: []}
   case ComponentType.HStack:
-    return {$type: ComponentType.HStack, style: {}, children: []}
+    return {$type: ComponentType.HStack, id, style: {}, children: []}
   case ComponentType.VStack:
-    return {$type: ComponentType.VStack, style: {}, children: []}
+    return {$type: ComponentType.VStack, id, style: {}, children: []}
   case ComponentType.Text:
-    return {$type: ComponentType.Text, style: {}, text: null}
+    return {$type: ComponentType.Text, id, style: {}, text: null}
   case ComponentType.Image:
-    return {$type: ComponentType.Image, style: {}, image: null, children: []}
+    return {$type: ComponentType.Image, id, style: {}, image: null, children: []}
   case ComponentType.Rectangle:
-    return {$type: ComponentType.Rectangle, style: {}}
+    return {$type: ComponentType.Rectangle, id, style: {}}
   default:
     throw new Error(`Unknown component type: ${type}`)
   }
