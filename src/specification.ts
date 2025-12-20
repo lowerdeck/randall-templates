@@ -43,8 +43,18 @@ export function isContainerType(type: ComponentType): type is ContainerType {
   return false
 }
 
+export function isZStackContainerType(type: ComponentType): type is ComponentType.ZStack {
+  if (type === ComponentType.ZStack) { return true }
+  if (type === ComponentType.Image) { return true }
+  return false
+}
+
 export function isContainer(spec: ComponentSpec): spec is ContainerSpec {
   return isContainerType(spec.$type)
+}
+
+export function isZStackContainer(spec: ComponentSpec): spec is ZStackSpec {
+  return isZStackContainerType(spec.$type)
 }
 
 export interface StackSpecCommon extends ContainerSpecCommon {
