@@ -1,7 +1,6 @@
 import { isArray, mapValues } from 'lodash'
 import { Attribute } from 'templates'
 import { isFunction, isPlainObject } from 'ytil'
-
 import { blacklist, global, jsep } from './jsep'
 import { ComponentSpec, EffectSpec } from './specification'
 
