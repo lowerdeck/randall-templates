@@ -1,65 +1,9 @@
 import { z } from 'zod'
-
-// #region Types
-
-export interface TemplateParamGroup {
-  group: string
-  params: TemplateParam[]
-}
-
-export type TemplateParam =
-  | TemplateTextParam
-  | TemplateImageParam
-  | TemplateNumberParam
-  | TemplateBooleanParam
-  | TemplateChoiceParam
-
-export interface TemplateParamCommon<T> {
-  name:     string
-  caption:  string
-  optional: boolean
-  default?: T
-  resolve: boolean
-}
-
-export interface TemplateTextParam extends TemplateParamCommon<string> {
-  type: 'text'
-  min_length?: number
-  max_length?: number
-  pattern?: string
-  multiline: boolean
-}
-
-export interface TemplateImageParam extends TemplateParamCommon<string> {
-  type: 'image'
-}
-
-export interface TemplateNumberParam extends TemplateParamCommon<string> {
-  type: 'number'
-  int: boolean
-  min?: number
-  max?: number
-}
-
-export interface TemplateBooleanParam extends TemplateParamCommon<string> {
-  type: 'boolean'
-  yes_caption?: string
-  no_caption?: string
-}
-
-export interface TemplateChoiceParam extends TemplateParamCommon<string> {
-  type: 'choice'
-  choices: ParameterChoice[]
-  variant: 'select' | 'buttons'
-}
-
-export type ParameterChoice = string | {value: string | number, label: string}
-
-// #endregion
+import { BooleanParam, ChoiceParam, ImageParam, NumberParam, Param, TextParam } from './schemas'
 
 // #region Defaults
 
-export function paramDefault(param: TemplateParam) {
+export function paramDefault(param: Param) {
   if (param.default !== undefined) {
     return param.default
   }
@@ -75,7 +19,7 @@ export function paramDefault(param: TemplateParam) {
 
 // #region Validation
 
-export function paramSchema(param: TemplateParam): z.ZodType {
+export function paramSchema(param: Param): z.ZodType {
   switch (param.type) {
   case 'text': return textParamSchema(param)
   case 'image': return imageParamSchema(param)
@@ -85,7 +29,7 @@ export function paramSchema(param: TemplateParam): z.ZodType {
   }
 }
 
-function textParamSchema(param: TemplateTextParam): z.ZodType {
+function textParamSchema(param: TextParam): z.ZodType {
   let type = z.string()
   if (param.min_length != null) {
     type = type.min(param.min_length)
@@ -93,12 +37,13 @@ function textParamSchema(param: TemplateTextParam): z.ZodType {
   if (param.max_length != null) {
     type = type.max(param.max_length)
   }
-  if (param.pattern != null) {
-    type = type.regex(new RegExp(param.pattern))
+  if (param.regexp != null) {
+    type = type.regex(new RegExp(param.regexp))
   }
 
   return type
 }
+
 const IMAGE_URL_REGEXP = /^https?:\/\/.*\.(png|jpe?g|webp)(?:[?#].*)$/i
 
 function safeParseFloat(value: string): number | null {
@@ -106,14 +51,14 @@ function safeParseFloat(value: string): number | null {
   return isNaN(num) ? null : num
 }
 
-function imageParamSchema(_param: TemplateImageParam): z.ZodType {
+function imageParamSchema(_param: ImageParam): z.ZodType {
   return z.union([
     z.instanceof(Uint8Array),
     z.string().regex(IMAGE_URL_REGEXP),
   ])
 }
 
-function numberParamSchema(param: TemplateNumberParam): z.ZodType {
+function numberParamSchema(param: NumberParam): z.ZodType {
   let schema = z.union([
     z.number(),
     z.string().transform((val) => {
@@ -144,7 +89,7 @@ function numberParamSchema(param: TemplateNumberParam): z.ZodType {
   return schema
 }
 
-function booleanParamSchema(_param: TemplateBooleanParam): z.ZodType {
+function booleanParamSchema(_param: BooleanParam): z.ZodType {
   return z.union([
     z.boolean(),
     z.number().refine((val) => val === 0 || val === 1).transform((val) => val === 1),
@@ -157,7 +102,7 @@ function booleanParamSchema(_param: TemplateBooleanParam): z.ZodType {
   ])
 }
 
-function choiceParamSchema(param: TemplateChoiceParam): z.ZodType {
+function choiceParamSchema(param: ChoiceParam): z.ZodType {
   const validValues = param.choices.map(choice => 
     typeof choice === 'string' ? choice : choice.value,
   )
@@ -168,4 +113,5 @@ function choiceParamSchema(param: TemplateChoiceParam): z.ZodType {
   },
   )
 }
+
 // #endregion
