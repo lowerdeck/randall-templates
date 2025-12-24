@@ -2,10 +2,9 @@ import { EffectSpec } from 'templates'
 import { z } from 'zod'
 
 export enum ParamScope {
-  Mapped = 'mapped',
-  Unmapped = 'unmapped',
-  Virtual = 'virtual',
-  Invisible = 'invisible',
+  Regular = 'regular',
+  Internal = 'internal',
+  External = 'external',
 }
 
 const urlLoader = z.union([
@@ -25,7 +24,7 @@ const paramResolver = z.union([
 const paramCommon = {
   name:    z.string().max(64),
   caption: z.string().max(512),
-  scope:   z.enum(ParamScope).default(ParamScope.Mapped),
+  scope:   z.enum(ParamScope).default(ParamScope.Regular),
   
   resolvers: z.array(paramResolver).default([]),
   default:   z.any().optional(),
