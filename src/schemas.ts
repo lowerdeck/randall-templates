@@ -7,13 +7,6 @@ export enum ParamScope {
   External = 'external',
 }
 
-const urlLoader = z.union([
-  z.string(),
-  z.object({
-    name: z.string(),
-  }).catchall(z.any()),
-]).transform(it => typeof it === 'string' ? {name: it} : it)
-
 const paramResolver = z.union([
   z.string(),
   z.object({
@@ -105,11 +98,7 @@ const phase = z.object({
 })
 
 export const schemas = {
-  params: z.object({
-    url_loaders: z.array(urlLoader).default(() => []),
-    params:      z.array(paramGroup).default(() => []),
-  }),
-  urlLoader,
+  params: z.array(paramGroup).default(() => []),
   paramGroup,
   param,
   root:   z.any(),
@@ -133,5 +122,3 @@ export interface ParamGroup {
   group: string
   params: Param[]
 }
-
-export type URLLoader = z.output<typeof urlLoader>
