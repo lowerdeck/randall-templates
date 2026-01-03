@@ -1,8 +1,33 @@
 import { z } from 'zod'
+import {
+  BooleanParam,
+  ChoiceParam,
+  ImageParam,
+  NumberParam,
+  Param,
+  ParamScope,
+  TextParam,
+} from './schemas'
 
-import { BooleanParam, ChoiceParam, ImageParam, NumberParam, Param, TextParam } from './schemas'
+// #region Empty param & defaults
 
-// #region Defaults
+export function emptyParam(type: Param['type'], name: string, caption: string): Param {
+  const common = {
+    name,
+    caption,
+    scope:     ParamScope.Regular,
+    resolvers: [],
+    optional:  true,
+  }
+
+  switch (type) {
+  case 'text': return {type: 'text', multiline: false, ...common}
+  case 'boolean': return {type: 'boolean', ...common}
+  case 'choice': return {type: 'choice', variant: 'select', choices: [], ...common}
+  case 'image': return {type: 'image', ...common}
+  case 'number': return {type: 'number', int: true, ...common}
+  }
+}
 
 export function paramDefault(param: Param) {
   if (param.default !== undefined) {
