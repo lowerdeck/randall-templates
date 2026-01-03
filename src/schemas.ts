@@ -7,12 +7,10 @@ export enum ParamScope {
   External = 'external',
 }
 
-const paramResolver = z.union([
-  z.string(),
-  z.object({
-    name: z.string(),
-  }).catchall(z.any()),
-]).transform(it => typeof it === 'string' ? {name: it} : it)
+const paramResolver = z.object({
+  name:    z.string(),
+  options: z.record(z.string(), z.any()),
+})
 
 const paramCommon = {
   name:    z.string().max(64),
