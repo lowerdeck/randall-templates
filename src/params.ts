@@ -11,7 +11,7 @@ import {
 
 // #region Empty param & defaults
 
-export function emptyParam(type: Param['type'], name: string, caption: string): Param {
+export function buildParam<P extends Param>(type: P['type'], name: string, caption: string, extra: Partial<P> = {}): P {
   const common = {
     name,
     caption,
@@ -21,11 +21,11 @@ export function emptyParam(type: Param['type'], name: string, caption: string): 
   }
 
   switch (type) {
-  case 'text': return {type: 'text', multiline: false, ...common}
-  case 'boolean': return {type: 'boolean', ...common}
-  case 'choice': return {type: 'choice', variant: 'select', choices: [], ...common}
-  case 'image': return {type: 'image', ...common}
-  case 'number': return {type: 'number', int: true, ...common}
+  case 'text': return {type: 'text', multiline: false, ...common, ...extra} as TextParam as P
+  case 'boolean': return {type: 'boolean', ...common, ...extra} as BooleanParam as P
+  case 'choice': return {type: 'choice', variant: 'select', choices: [], ...common, ...extra} as ChoiceParam as P
+  case 'image': return {type: 'image', ...common, ...extra} as ImageParam as P
+  case 'number': return {type: 'number', int: true, ...common, ...extra} as NumberParam as P
   }
 }
 

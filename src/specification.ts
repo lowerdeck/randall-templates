@@ -19,6 +19,7 @@ export type ContainerSpec =
   | ZStackSpec
   | VStackSpec
   | HStackSpec
+  | ImageSpec
 
 export enum ComponentType {
   Image = 'image',
@@ -79,11 +80,29 @@ export interface ImageSpec extends ContainerSpecCommon {
   $type:         ComponentType.Image
   image:         TemplateImage | string | null
   aspect_ratio?: number
-  resize_mode?: 'cover' | 'contain' | 'stretch'
+  resize_mode?:  ResizeMode
 
   // These are only for resize_mode 'cover'.
-  image_placement?: 'center' | 'top' | 'bottom' | 'left' | 'right' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+  image_placement?: ImagePlacement
   image_offset?: [number, number]
+}
+
+export enum ResizeMode {
+  Cover = 'cover',
+  Contain = 'contain',
+  Stretch = 'stretch'
+}
+
+export enum ImagePlacement {
+  Center = 'center',
+  Top = 'top',
+  Bottom = 'bottom',
+  Left = 'left',
+  Right = 'right',
+  TopLeft = 'top-left',
+  TopRight = 'top-right',
+  BottomLeft = 'bottom-left',
+  BottomRight = 'bottom-right',
 }
 
 export interface TemplateImage {
@@ -180,22 +199,20 @@ export enum FlexJustify {
   SpaceBetween = 'space-between',
 }
 
-export function emptyComponent(type: ContainerType, id: string): ContainerSpec
-export function emptyComponent(type: ComponentType, id: string): ComponentSpec
-export function emptyComponent(type: ComponentType, id: string): ComponentSpec {
+export function emptyComponent<C extends ComponentSpec>(type: C['$type'], id: string): C {
   switch (type) {
   case ComponentType.ZStack:
-    return {$type: ComponentType.ZStack, id, style: {}, children: []}
+    return {$type: ComponentType.ZStack, id, style: {}, children: []} as ZStackSpec as C
   case ComponentType.HStack:
-    return {$type: ComponentType.HStack, id, style: {}, children: []}
+    return {$type: ComponentType.HStack, id, style: {}, children: []} as HStackSpec as C
   case ComponentType.VStack:
-    return {$type: ComponentType.VStack, id, style: {}, children: []}
+    return {$type: ComponentType.VStack, id, style: {}, children: []} as VStackSpec as C
   case ComponentType.Text:
-    return {$type: ComponentType.Text, id, style: {}, text: null}
+    return {$type: ComponentType.Text, id, style: {}, text: null} as TextSpec as C
   case ComponentType.Image:
-    return {$type: ComponentType.Image, id, style: {}, image: null, children: []}
+    return {$type: ComponentType.Image, id, style: {}, image: null, children: []} as ImageSpec as C
   case ComponentType.Rectangle:
-    return {$type: ComponentType.Rectangle, id, style: {}}
+    return {$type: ComponentType.Rectangle, id, style: {}} as RectangleSpec as C
   default:
     throw new Error(`Unknown component type: ${type}`)
   }
