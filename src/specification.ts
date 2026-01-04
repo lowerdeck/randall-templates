@@ -99,10 +99,6 @@ export enum ImagePlacement {
   Bottom = 'bottom',
   Left = 'left',
   Right = 'right',
-  TopLeft = 'top-left',
-  TopRight = 'top-right',
-  BottomLeft = 'bottom-left',
-  BottomRight = 'bottom-right',
 }
 
 export interface TemplateImage {
@@ -159,7 +155,7 @@ export interface ComponentLayoutSpec {
   max_height?: Attribute<number>
   min_height?: Attribute<number>
 
-  flex?:       Attribute<number>
+  flex?:        Attribute<number>
   flex_grow?:   Attribute<number>
   flex_shrink?: Attribute<number>
   flex_basis?:  Attribute<number | 'auto'>
