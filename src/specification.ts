@@ -130,7 +130,7 @@ export namespace Attribute {
 }
 
 export interface ContainerSpecCommon extends ComponentSpecCommon {
-  children: ComponentSpec[]
+  children: Array<ComponentSpec | null>
 }
 
 export interface ComponentSpecCommon extends ComponentLayoutSpec, TransitionableSpec {
@@ -158,7 +158,6 @@ export interface ComponentLayoutSpec {
   flex?:        Attribute<number>
   flex_grow?:   Attribute<number>
   flex_shrink?: Attribute<number>
-  flex_basis?:  Attribute<number | 'auto'>
 
   align_self?: Attribute<FlexAlign>
 
