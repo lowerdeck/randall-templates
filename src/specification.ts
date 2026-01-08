@@ -155,7 +155,7 @@ export interface ComponentLayoutSpec {
   max_height?: Attribute<number>
   min_height?: Attribute<number>
 
-  flex?:        Attribute<number>
+  flex_basis?:  Attribute<0 | 'auto'>
   flex_grow?:   Attribute<number>
   flex_shrink?: Attribute<number>
 
