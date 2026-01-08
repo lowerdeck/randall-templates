@@ -124,8 +124,8 @@ export class Rect {
     return new Rect(
       this.left + insetLeft,
       this.top + insetTop,
-      this.width - insetLeft - insetRight,
-      this.height - insetTop - insetBottom,
+      Math.max(0, this.width - insetLeft - insetRight),
+      Math.max(0, this.height - insetTop - insetBottom),
     )
   }
 
