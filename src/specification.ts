@@ -155,7 +155,7 @@ export interface ComponentLayoutSpec {
   max_height?: Attribute<number>
   min_height?: Attribute<number>
 
-  flex_basis?:  Attribute<0 | 'auto'>
+  flex_basis?:  Attribute<FlexBasis>
   flex_grow?:   Attribute<number>
   flex_shrink?: Attribute<number>
 
@@ -178,6 +178,11 @@ export interface TransitionableSpec {
   rotate?:      Attribute<number> // degrees
   translate_x?: Attribute<number> // pixels
   translate_y?: Attribute<number> // pixels
+}
+
+export enum FlexBasis {
+  Zero = 0,
+  Auto = 'auto'
 }
 
 export enum FlexAlign {
