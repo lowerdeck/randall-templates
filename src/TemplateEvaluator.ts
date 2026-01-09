@@ -1,21 +1,16 @@
+import { Property } from '@jsep-plugin/object'
+import { SpreadElement } from '@jsep-plugin/spread'
 import { isArray, mapValues } from 'lodash'
 import { Attribute } from 'templates'
-import { isFunction, isPlainObject } from 'ytil'
+import { errorMessage, isFunction, isPlainObject } from 'ytil'
+
 import { blacklist, global, jsep } from './jsep'
 import { ComponentSpec, EffectSpec } from './specification'
 
 // Type declarations for jsep plugin types
 interface ObjectExpression extends jsep.Expression {
-  type: 'ObjectExpression'
-  properties: Property[]
-}
-
-interface Property extends jsep.Expression {
-  type: 'Property'
-  computed: boolean
-  key: jsep.Expression
-  shorthand: boolean
-  value?: jsep.Expression
+	type: 'ObjectExpression';
+  properties: Array<SpreadElement | Property>
 }
 
 export class TemplateEvaluator {
@@ -72,14 +67,19 @@ export class TemplateEvaluator {
     if (expression.length > this.options.maxLen) {
       throw new Error(`Expression too long (>${this.options.maxLen})`)
     }
-    
-    const ast = jsep(`(${expression})`)
 
-    // Validate + gather node count/depth
-    const stats = {nodes: 0}
-    this.validate(ast, stats, 0)
+    try {
+      const ast = jsep(`(${expression})`)
 
-    return this.evaluateNode(ast, 0) as T
+      // Validate + gather node count/depth
+      const stats = {nodes: 0}
+      this.validate(ast, stats, 0)
+
+      return this.evaluateNode(ast, 0) as T
+    } catch (error) {
+      const message = errorMessage(error)
+      throw new TemplateEvaluatorError(message, expression, error)
+    }
   }
 
   // #endregion
@@ -192,13 +192,17 @@ export class TemplateEvaluator {
     case 'ObjectExpression': {
       const expr = node as ObjectExpression
       for (const prop of expr.properties ?? []) {
-        // Validate property key if it's computed
-        if (prop.computed && prop.key) {
-          this.validate(prop.key, stats, depth + 1)
-        }
-        // Validate property value
-        if (prop.value) {
-          this.validate(prop.value, stats, depth + 1)
+        if (prop.type === 'SpreadElement') {
+          this.validate(prop.argument, stats, depth + 1)
+        } else {
+          // Validate property key if it's computed
+          if (prop.computed && prop.key) {
+            this.validate(prop.key, stats, depth + 1)
+          }
+          // Validate property value
+          if (prop.value) {
+            this.validate(prop.value, stats, depth + 1)
+          }
         }
       }
       return
@@ -335,24 +339,28 @@ export class TemplateEvaluator {
       const result: Record<string, any> = {}
       
       for (const prop of expr.properties ?? []) {
-        // Get the property key
-        let key: string
-        if (prop.computed && prop.key) {
-          // Computed property like {[expr]: value}
-          key = String(this.evaluateNode(prop.key, depth + 1))
-        } else if (prop.key?.type === 'Identifier') {
-          // Regular property like {foo: value}
-          key = prop.key.name as string
-        } else if (prop.key?.type === 'Literal') {
-          // Quoted property like {"foo": value}
-          key = String(prop.key.value)
+        if (prop.type === 'SpreadElement') {
+          Object.assign(result, this.evaluateNode(prop.argument, depth + 1))
         } else {
-          throw new Error('Invalid object property key')
-        }
+        // Get the property key
+          let key: string
+          if (prop.computed && prop.key) {
+          // Computed property like {[expr]: value}
+            key = String(this.evaluateNode(prop.key, depth + 1))
+          } else if (prop.key?.type === 'Identifier') {
+          // Regular property like {foo: value}
+            key = prop.key.name as string
+          } else if (prop.key?.type === 'Literal') {
+          // Quoted property like {"foo": value}
+            key = String(prop.key.value)
+          } else {
+            throw new Error('Invalid object property key')
+          }
 
-        // Get the property value
-        if (prop.value) {
-          result[key] = this.evaluateNode(prop.value, depth + 1)
+          // Get the property value
+          if (prop.value) {
+            result[key] = this.evaluateNode(prop.value, depth + 1)
+          }
         }
       }
       
@@ -391,4 +399,17 @@ export interface TemplateEvaluatorOptions {
 
 export interface EvaluateStructureOptions {
   onExpression?: (expression: string, evaluated: any) => void
+}
+
+export class TemplateEvaluatorError extends Error {
+
+  constructor(
+    message: string,
+    public readonly expression: string,
+    cause?: unknown,
+  ) {
+    super(`Error while evaluating expression (${expression}): ${message}`, {cause})
+  }
+
+
 }
