@@ -1,11 +1,9 @@
 import { Property } from '@jsep-plugin/object'
 import { SpreadElement } from '@jsep-plugin/spread'
 import { isArray, mapValues } from 'lodash'
-import { Attribute } from 'templates'
 import { errorMessage, isFunction, isPlainObject } from 'ytil'
-
 import { blacklist, global, jsep } from './jsep'
-import { ComponentSpec, EffectSpec } from './specification'
+import { Attribute, ComponentSpec, EffectSpec } from './specification'
 
 // Type declarations for jsep plugin types
 interface ObjectExpression extends jsep.Expression {

@@ -1,5 +1,5 @@
-import { EffectSpec } from 'templates'
 import { z } from 'zod'
+import { EffectSpec } from './specification'
 
 export enum ParamScope {
   Regular = 'regular',
