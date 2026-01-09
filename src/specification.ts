@@ -1,12 +1,12 @@
-import { Image } from './Image'
+import { isPlainObject } from 'ytil'
 
 export interface SceneSpec {
   width:  number
   height: number
   fps:    number
 
-  root:       ComponentSpec
-  animations: Animation[]
+  root:    ZStackSpec
+  effects: EffectSpec[]
 }
 
 export type ComponentSpec =
@@ -19,6 +19,7 @@ export type ContainerSpec =
   | ZStackSpec
   | VStackSpec
   | HStackSpec
+  | ImageSpec
 
 export enum ComponentType {
   Image = 'image',
@@ -29,105 +30,206 @@ export enum ComponentType {
   HStack = 'hstack',
 }
 
+export type ContainerType =
+  | ComponentType.ZStack
+  | ComponentType.VStack
+  | ComponentType.HStack
+  | ComponentType.Image
+
+export function isContainerType(type: ComponentType): type is ContainerType {
+  if (type === ComponentType.ZStack) { return true }
+  if (type === ComponentType.VStack) { return true }
+  if (type === ComponentType.HStack) { return true }
+  if (type === ComponentType.Image) { return true }
+  return false
+}
+
+export function isZStackContainerType(type: ComponentType): type is ComponentType.ZStack {
+  if (type === ComponentType.ZStack) { return true }
+  if (type === ComponentType.Image) { return true }
+  return false
+}
+
+export function isContainer(spec: ComponentSpec): spec is ContainerSpec {
+  return isContainerType(spec.$type)
+}
+
+export function isZStackContainer(spec: ComponentSpec): spec is ZStackSpec {
+  return isZStackContainerType(spec.$type)
+}
+
+export interface StackSpecCommon extends ContainerSpecCommon {
+  align?:      Attribute<FlexAlign>
+  justify?:    Attribute<FlexJustify>
+  gap?:        Attribute<number>
+}
+
 export interface ZStackSpec extends ContainerSpecCommon {
-  type: ComponentType.ZStack
+  $type: ComponentType.ZStack
 }
 
-export interface VStackSpec extends ContainerSpecCommon {
-  type: ComponentType.VStack
+export interface VStackSpec extends StackSpecCommon {
+  $type: ComponentType.VStack
 }
 
-export interface HStackSpec extends ContainerSpecCommon {
-  type: ComponentType.HStack
+export interface HStackSpec extends StackSpecCommon {
+  $type: ComponentType.HStack
 }
 
-export interface ImageSpec extends ComponentSpecCommon {
-  type:          ComponentType.Image
-  src:           Image | string | null
+export interface ImageSpec extends ContainerSpecCommon {
+  $type:         ComponentType.Image
+  image:         TemplateImage | string | null
   aspect_ratio?: number
-  resize_mode?: 'cover' | 'contain' | 'stretch'
+  resize_mode?:  ResizeMode
 
   // These are only for resize_mode 'cover'.
-  image_placement?: 'center' | 'top' | 'bottom' | 'left' | 'right' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+  image_placement?: ImagePlacement
   image_offset?: [number, number]
 }
 
+export enum ResizeMode {
+  Cover = 'cover',
+  Contain = 'contain',
+  Stretch = 'stretch'
+}
+
+export enum ImagePlacement {
+  Center = 'center',
+  Top = 'top',
+  Bottom = 'bottom',
+  Left = 'left',
+  Right = 'right',
+}
+
+export interface TemplateImage {
+  type: string
+  binary: Uint8Array<ArrayBuffer>
+}
+
 export interface RectangleSpec extends ComponentSpecCommon {
-  type: ComponentType.Rectangle
+  $type: ComponentType.Rectangle
 }
 
 export interface TextSpec extends ComponentSpecCommon {
-  type:        ComponentType.Text
-  max_width?:  number
-  max_height?: number
-  text?:       string
+  $type: ComponentType.Text
+  text:  string | null
 }
 
 //------
 // Common props
 
+export type Attribute<T> = T | {$: string}
+
+export namespace Attribute {
+
+  export function isDynamic(value: any): value is {$: string} {
+    if (!isPlainObject(value)) { return false }
+    return typeof value.$ === 'string'
+  }
+
+}
+
 export interface ContainerSpecCommon extends ComponentSpecCommon {
-  children?: ComponentSpec[]
+  children: Array<ComponentSpec | null>
 }
 
 export interface ComponentSpecCommon extends ComponentLayoutSpec, TransitionableSpec {
-  id?:      string
-  preview?: boolean
-  style?:   Record<string, any>
+  id:    string
+  style: Record<string, any>
+
+  $if?: string
 }
 
 export interface ComponentLayoutSpec {
-  inset?:  number
-  left?:   number
-  right?:  number
-  top?:    number
-  bottom?: number
+  inset?:  Attribute<number>
+  left?:   Attribute<number>
+  right?:  Attribute<number>
+  top?:    Attribute<number>
+  bottom?: Attribute<number>
   
-  width?:  number
-  max_width?:  number
-  min_width?:  number
+  width?:  Attribute<number>
+  max_width?:  Attribute<number>
+  min_width?:  Attribute<number>
   
-  height?: number
-  max_height?: number
-  min_height?: number
+  height?: Attribute<number>
+  max_height?: Attribute<number>
+  min_height?: Attribute<number>
 
-  flex?:       number
-  flex_grow?:   number
-  flex_shrink?: number
-  flex_basis?:  number | 'auto'
+  flex_basis?:  Attribute<FlexBasis>
+  flex_grow?:   Attribute<number>
+  flex_shrink?: Attribute<number>
 
-  gap?:     number
-  align?:   FlexAlign
-  justify?: FlexJustify
+  align_self?: Attribute<FlexAlign>
 
-  padding?:        number
-  padding_x?:      number
-  padding_y?:      number
-  padding_left?:   number
-  padding_right?:  number
-  padding_top?:    number
-  padding_bottom?: number
+  padding?:        Attribute<number>
+  padding_x?:      Attribute<number>
+  padding_y?:      Attribute<number>
+  padding_left?:   Attribute<number>
+  padding_right?:  Attribute<number>
+  padding_top?:    Attribute<number>
+  padding_bottom?: Attribute<number>
 
-  transform_origin?: [number, number]
+  transform_origin?: Attribute<[number, number]>
 }
 
 export interface TransitionableSpec {
-  opacity?:     number // 0 - 1
-  scale?:       number // 0 - 1
-  rotate?:      number // degrees
-  translate_x?: number // pixels
-  translate_y?: number // pixels
+  opacity?:     Attribute<number> // 0 - 1
+  scale?:       Attribute<number> // 0 - 1
+  rotate?:      Attribute<number> // degrees
+  translate_x?: Attribute<number> // pixels
+  translate_y?: Attribute<number> // pixels
 }
 
-export type FlexAlign = 'start' | 'center' | 'end' | 'stretch'
-export type FlexJustify = 'start' | 'center' | 'end' | 'space-between'
+export enum FlexBasis {
+  Zero = 0,
+  Auto = 'auto'
+}
+
+export enum FlexAlign {
+  Start = 'start',
+  Center = 'center',
+  End = 'end',
+  Stretch = 'stretch',
+}
+
+export enum FlexJustify {
+  Start = 'start',
+  Center = 'center',
+  End = 'end',
+  SpaceBetween = 'space-between',
+}
+
+export function emptyComponent<C extends ComponentSpec>(type: C['$type'], id: string): C {
+  switch (type) {
+  case ComponentType.ZStack:
+    return {$type: ComponentType.ZStack, id, style: {}, children: []} as ZStackSpec as C
+  case ComponentType.HStack:
+    return {$type: ComponentType.HStack, id, style: {}, children: []} as HStackSpec as C
+  case ComponentType.VStack:
+    return {$type: ComponentType.VStack, id, style: {}, children: []} as VStackSpec as C
+  case ComponentType.Text:
+    return {$type: ComponentType.Text, id, style: {}, text: null} as TextSpec as C
+  case ComponentType.Image:
+    return {$type: ComponentType.Image, id, style: {}, image: null, children: []} as ImageSpec as C
+  case ComponentType.Rectangle:
+    return {$type: ComponentType.Rectangle, id, style: {}} as RectangleSpec as C
+  default:
+    throw new Error(`Unknown component type: ${type}`)
+  }
+}
 
 //------
-// Transitions
+// Phases
 
-export type Animation = Transition | Override | Effect
 
-export interface Transition {
+export interface PhaseSpec {
+  name:    string
+  effects: EffectSpec[]
+}
+
+export type EffectSpec = TransitionSpec | OverrideSpec | CustomEffectSpec
+
+export interface TransitionSpec {
   component: string
   duration:  number
   easing:    'linear' | 'ease-in' | 'ease-out' | 'ease-in-out'
@@ -135,7 +237,7 @@ export interface Transition {
   to:        Record<TransitionProp, number>
 }
 
-export interface Override extends Record<TransitionProp, number> {
+export interface OverrideSpec extends Record<TransitionProp, number> {
   component: string
 }
 
@@ -146,7 +248,7 @@ export type TransitionProp =
   | 'translateX'
   | 'translateY'
 
-export type Effect = TypingEffect
+export type CustomEffectSpec = TypingEffect
 
 export interface TypingEffect {
   type:      'effect',

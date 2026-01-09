@@ -32,7 +32,7 @@ export class Rect {
     }
   }
 
-  public static zero = new Rect(0, 0, 0, 0)
+  public static zero = () => new Rect(0, 0, 0, 0)
 
   public static around(rects: Rect[]) {
     const left = Math.min(...rects.map(it => it.left))
@@ -82,6 +82,18 @@ export class Rect {
     )
   }
 
+  public intersects(other: Rect) {
+    if (this.right < other.left || this.left >= other.right) { return false }
+    if (this.bottom < other.top || this.top >= other.bottom) { return false }
+    return true
+  }
+
+  public contains(point: Vector) {
+    if (point.x < this.left || point.x >= this.right) { return false }
+    if (point.y < this.top || point.y >= this.bottom) { return false }
+    return true
+  }
+
   //------
   // Derived
 
@@ -112,8 +124,8 @@ export class Rect {
     return new Rect(
       this.left + insetLeft,
       this.top + insetTop,
-      this.width - insetLeft - insetRight,
-      this.height - insetTop - insetBottom,
+      Math.max(0, this.width - insetLeft - insetRight),
+      Math.max(0, this.height - insetTop - insetBottom),
     )
   }
 
