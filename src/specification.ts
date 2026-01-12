@@ -1,4 +1,5 @@
-import { isPlainObject } from 'ytil'
+import { set } from 'lodash'
+import { isPlainObject, objectEntries } from 'ytil'
 
 export interface SceneSpec {
   width:  number
@@ -199,7 +200,16 @@ export enum FlexJustify {
   SpaceBetween = 'space-between',
 }
 
-export function emptyComponent<C extends ComponentSpec>(type: C['$type'], id: string): C {
+export function defaultComponent<C extends ComponentSpec>(type: C['$type'], id: string): C {
+  const empty = emptyComponent(type, id)
+  const defaults = getDefaultValuesForComponentType(type)
+  for (const [path, value] of objectEntries(defaults)) {
+    set(empty, path, value)
+  }
+  return empty
+}
+
+function emptyComponent<C extends ComponentSpec>(type: C['$type'], id: string): C {
   switch (type) {
   case ComponentType.ZStack:
     return {$type: ComponentType.ZStack, id, style: {}, children: []} as ZStackSpec as C
@@ -215,6 +225,52 @@ export function emptyComponent<C extends ComponentSpec>(type: C['$type'], id: st
     return {$type: ComponentType.Rectangle, id, style: {}} as RectangleSpec as C
   default:
     throw new Error(`Unknown component type: ${type}`)
+  }
+}
+
+const $componentDefaultsCommon: Record<string, unknown> = {
+  'padding':        0,
+  'padding_x':      0,
+  'padding_y':      0,
+  'padding_left':   0,
+  'padding_right':  0,
+  'padding_top':    0,
+  'padding_bottom': 0,
+
+  'flex_basis':  'auto',
+  'flex_grow':   0,
+  'flex_shrink': 0,
+
+  'align':   'stretch',
+  'justify': 'start',
+  'gap':     0,
+}
+
+const $textComponentDefaults: Record<string, unknown> = {
+  ...$componentDefaultsCommon,
+  
+  'style.font_family': "Arial",
+  'style.font_size':   32,
+  'style.font_style':  'Regular',
+}
+
+const $imageComponentDefaults: Record<string, unknown> = {
+  ...$componentDefaultsCommon,
+
+  'aspect_ratio':    1,
+  'resize_mode':     ResizeMode.Contain,
+  'image_placement': 'center',
+  'image_offset':    [0, 0],
+}
+
+export function getDefaultValuesForComponentType(type: ComponentType): Record<string, unknown> {
+  switch (type) {
+  case ComponentType.Text:
+    return $textComponentDefaults
+  case ComponentType.Image:
+    return $imageComponentDefaults
+  default:
+    return $componentDefaultsCommon
   }
 }
 
