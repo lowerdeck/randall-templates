@@ -1,4 +1,5 @@
 import { z } from 'zod'
+
 import { EffectSpec } from './specification'
 
 export enum ParamScope {
@@ -99,8 +100,7 @@ export const schemas = {
   params: z.array(paramGroup).default(() => []),
   paramGroup,
   param,
-  root:   z.any(),
-  phases: z.array(phase),
+  phase,
 }
 
 export type Param =
