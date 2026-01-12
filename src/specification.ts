@@ -244,6 +244,8 @@ const $componentDefaultsCommon: Record<string, unknown> = {
   'align':   'stretch',
   'justify': 'start',
   'gap':     0,
+
+  'style.shadow_offset': [0, 0],
 }
 
 const $textComponentDefaults: Record<string, unknown> = {
