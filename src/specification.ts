@@ -229,13 +229,7 @@ function emptyComponent<C extends ComponentSpec>(type: C['$type'], id: string): 
 }
 
 const $componentDefaultsCommon: Record<string, unknown> = {
-  'padding':        0,
-  'padding_x':      0,
-  'padding_y':      0,
-  'padding_left':   0,
-  'padding_right':  0,
-  'padding_top':    0,
-  'padding_bottom': 0,
+  'padding': 0,
 
   'flex_basis':  'auto',
   'flex_grow':   0,
@@ -245,12 +239,15 @@ const $componentDefaultsCommon: Record<string, unknown> = {
   'justify': 'start',
   'gap':     0,
 
+  'style.border_radius': 0,
+  'style.shadow_blur':   0,
   'style.shadow_offset': [0, 0],
 }
 
 const $textComponentDefaults: Record<string, unknown> = {
   ...$componentDefaultsCommon,
   
+  'style.color':       '#000000',
   'style.font_family': "Arial",
   'style.font_size':   32,
   'style.font_style':  'Regular',
