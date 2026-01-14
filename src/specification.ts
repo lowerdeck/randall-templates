@@ -235,13 +235,17 @@ const $componentDefaultsCommon: Record<string, unknown> = {
   'flex_grow':   0,
   'flex_shrink': 0,
 
-  'align':   'stretch',
-  'justify': 'start',
-  'gap':     0,
-
   'style.border_radius': 0,
   'style.shadow_blur':   0,
   'style.shadow_offset': [0, 0],
+}
+
+const $stackComponentDefaults: Record<string, unknown> = {
+  ...$componentDefaultsCommon,
+
+  'align':   'stretch',
+  'justify': 'start',
+  'gap':     0,
 }
 
 const $textComponentDefaults: Record<string, unknown> = {
@@ -268,6 +272,9 @@ export function getDefaultValuesForComponentType(type: ComponentType): Record<st
     return $textComponentDefaults
   case ComponentType.Image:
     return $imageComponentDefaults
+  case ComponentType.HStack:
+  case ComponentType.VStack:
+    return $stackComponentDefaults
   default:
     return $componentDefaultsCommon
   }
