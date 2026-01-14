@@ -235,6 +235,7 @@ const $componentDefaultsCommon: Record<string, unknown> = {
   'flex_grow':   0,
   'flex_shrink': 0,
 
+  'style.border_width':  0,
   'style.border_radius': 0,
   'style.shadow_blur':   0,
   'style.shadow_offset': [0, 0],
