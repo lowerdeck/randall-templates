@@ -11,10 +11,10 @@ import {
 
 // #region Empty param & defaults
 
-export function buildParam<P extends Param>(type: P['type'], name: string, caption: string, extra: Partial<P> = {}): P {
+export function buildParam<P extends Param>(type: P['type'], name: string, label: string, extra: Partial<P> = {}): P {
   const common = {
     name,
-    caption,
+    label,
     scope:     ParamScope.Regular,
     resolvers: [],
     optional:  true,
