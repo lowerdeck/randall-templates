@@ -1,5 +1,4 @@
 import { z } from 'zod'
-
 import { EffectSpec } from './specification'
 
 export enum ParamScope {
@@ -14,9 +13,9 @@ const paramResolver = z.object({
 })
 
 const paramCommon = {
-  name:    z.string().max(64),
-  caption: z.string().max(512),
-  scope:   z.enum(ParamScope).default(ParamScope.Regular),
+  name:  z.string().max(64),
+  label: z.string().max(512),
+  scope: z.enum(ParamScope).default(ParamScope.Regular),
   
   resolvers: z.array(paramResolver).default([]),
   default:   z.any().optional(),
@@ -52,8 +51,8 @@ const booleanParam = z.object({
   type: z.literal('boolean'),
   ...paramCommon,
 
-  yes_caption: z.string().max(64).optional(),
-  no_caption:  z.string().max(64).optional(),
+  yes_label: z.string().max(64).optional(),
+  no_label:  z.string().max(64).optional(),
 })
 
 const choiceParam = z.object({
