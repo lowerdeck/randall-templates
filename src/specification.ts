@@ -321,18 +321,18 @@ export namespace ComponentTrack {
 }
 
 export interface PropertyTrack {
-  tweens: Array<[start: number, end: number, tween: Tween]>
+  keyframes: Keyframe[]
 }
 
 export namespace PropertyTrack {
   export function empty(): PropertyTrack {
-    return {tweens: []}
+    return {keyframes: []}
   }
 }
 
-export interface Tween {
-  from: number
-  to: number
+export interface Keyframe {
+  frame: number
+  value: number
   timing: WellKnownTimingFunction | TimingBezier
 }
 export enum WellKnownTimingFunction {
