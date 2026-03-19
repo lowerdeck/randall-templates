@@ -1,5 +1,6 @@
+import { EnumUtil } from 'ytil'
 import { z } from 'zod'
-import { AnimProperty } from './specification'
+import { AnimProperty, Keyframe, Phase, WellKnownTimingFunction } from './specification'
 
 export enum ParamScope {
   Regular = 'regular',
@@ -90,17 +91,36 @@ const paramGroup = z.object({
   params: z.array(param),
 })
 
-const phase = z.object({
+const phase: z.ZodType<Phase> = z.object({
   name: z.string().max(64),
   from: z.number(),
   to:   z.number(),
 })
 
-const keyframe = z.object({
-  time:   z.number(),
+const keyframe: z.ZodType<Keyframe> = z.object({
+  frame:  z.number(),
   value:  z.any(),
-  timing: z.string().optional(),
+  timing: z.string().transform(parseTiming),
 })
+
+function parseTiming(raw: string): Keyframe['timing'] {
+  if (EnumUtil.values(WellKnownTimingFunction).includes(raw as WellKnownTimingFunction)) {
+    return raw as WellKnownTimingFunction
+  }
+
+  if (raw.startsWith('cubic-bezier(') && raw.endsWith(')')) {
+    const content = raw.slice('cubic-bezier('.length, -1)
+    const parts = content.split(',').map(part => part.trim())
+    if (parts.length === 4) {
+      const nums = parts.map(part => Number(part))
+      if (nums.every(num => !isNaN(num))) {
+        return nums as Keyframe['timing']
+      }
+    }
+  }
+
+  throw new Error(`Invalid timing: ${raw}`)
+}
 
 const track = z.object({
   component_uid: z.string(),
