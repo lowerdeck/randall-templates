@@ -6,8 +6,8 @@ export interface SceneSpec {
   height: number
   fps:    number
 
-  root:    ZStackSpec
-  effects: EffectSpec[]
+  root: ZStackSpec
+  animations: AnimationsSpec
 }
 
 export type ComponentSpec =
@@ -282,40 +282,67 @@ export function getDefaultValuesForComponentType(type: ComponentType): Record<st
 }
 
 //------
-// Phases
+// Animations
 
-
-export interface PhaseSpec {
-  name:    string
-  effects: EffectSpec[]
+export interface AnimationsSpec {
+  /**
+   * Phases are marked parts of the animation timeline that are outputted as different files.
+   */
+  phases: Phase[]
+  tracks: ComponentTrack[]
 }
 
-export type EffectSpec = TransitionSpec | OverrideSpec | CustomEffectSpec
+export interface Phase {
+  name: string
+  from: number
+  to: number
+}
 
-export interface TransitionSpec {
+export interface ComponentTrack {
   component: string
-  duration:  number
-  easing:    'linear' | 'ease-in' | 'ease-out' | 'ease-in-out'
-  from:      Record<TransitionProp, number>
-  to:        Record<TransitionProp, number>
+  opacity: PropertyTrack
+  scale: PropertyTrack
+  rotate: PropertyTrack
+  translate_x: PropertyTrack
+  translate_y: PropertyTrack
 }
 
-export interface OverrideSpec extends Record<TransitionProp, number> {
-  component: string
+export namespace ComponentTrack {
+  export function empty(componentUid: string): ComponentTrack {
+    return {
+      component:   componentUid,
+      opacity:     PropertyTrack.empty(),
+      scale:       PropertyTrack.empty(),
+      rotate:      PropertyTrack.empty(),
+      translate_x: PropertyTrack.empty(),
+      translate_y: PropertyTrack.empty(),
+    }
+  }
 }
 
-export type TransitionProp =
-  | 'opacity'
-  | 'scale'
-  | 'rotate'
-  | 'translateX'
-  | 'translateY'
+export interface PropertyTrack {
+  tweens: Array<[start: number, end: number, tween: Tween]>
+}
 
-export type CustomEffectSpec = TypingEffect
+export namespace PropertyTrack {
+  export function empty(): PropertyTrack {
+    return {tweens: []}
+  }
+}
+
+export interface Tween {
+  from: number
+  to: number
+  duration: number
+  easing: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out'
+}
+
+export interface EffectTrack {
+  effects: Array<[start: number, effect: Effect]>
+}
+
+export type Effect = TypingEffect
 
 export interface TypingEffect {
-  type:      'effect',
-  name:      'typing'
-  component: string
-  duration:  number
+  type: 'typing'
 }

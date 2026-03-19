@@ -3,7 +3,7 @@ import { SpreadElement } from '@jsep-plugin/spread'
 import { isArray, mapValues } from 'lodash'
 import { errorMessage, isFunction, isPlainObject } from 'ytil'
 import { blacklist, global, jsep } from './jsep'
-import { Attribute, ComponentSpec, EffectSpec } from './specification'
+import { Attribute, ComponentSpec, Effect } from './specification'
 
 // Type declarations for jsep plugin types
 interface ObjectExpression extends jsep.Expression {
@@ -377,8 +377,8 @@ export class TemplateEvaluator {
 type evaluate<T> = (
     T extends infer C extends ComponentSpec ? Evaluated<C> | undefined :
     T extends Array<infer C extends ComponentSpec> ? Array<Evaluated<C> | undefined> :
-    T extends infer E extends EffectSpec ? Evaluated<E> | undefined :
-    T extends Array<infer E extends EffectSpec> ? Array<Evaluated<E> | undefined> :
+    T extends infer E extends Effect ? Evaluated<E> | undefined :
+    T extends Array<infer E extends Effect> ? Array<Evaluated<E> | undefined> :
     T extends Attribute<infer R> ? R :
     T extends Array<infer I> ? Array<Evaluated<I>> :
     evaluate<T>
