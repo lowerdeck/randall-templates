@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { AnimProperty } from './specification'
 
 export enum ParamScope {
   Regular = 'regular',
@@ -89,10 +90,34 @@ const paramGroup = z.object({
   params: z.array(param),
 })
 
+const phase = z.object({
+  name: z.string().max(64),
+  from: z.number(),
+  to:   z.number(),
+})
+
+const keyframe = z.object({
+  time:   z.number(),
+  value:  z.any(),
+  timing: z.string().optional(),
+})
+
+const track = z.object({
+  component_uid: z.string(),
+  prop:          z.enum(AnimProperty),
+  keyframes:     z.array(keyframe),
+})
+
+const animations = z.object({
+  phases: z.array(phase),
+  tracks: z.array(track),
+})
+
 export const schemas = {
   params: z.array(paramGroup).default(() => []),
   paramGroup,
   param,
+  animations,
 }
 
 export type Param =
