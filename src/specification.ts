@@ -289,7 +289,7 @@ export interface AnimationsSpec {
    * Phases are marked parts of the animation timeline that are outputted as different files.
    */
   phases: Phase[]
-  tracks: ComponentTrack[]
+  tracks: Track[]
 }
 
 export interface Phase {
@@ -298,35 +298,27 @@ export interface Phase {
   to: number
 }
 
-export interface ComponentTrack {
-  component: string
-  opacity: PropertyTrack
-  scale: PropertyTrack
-  rotate: PropertyTrack
-  translate_x: PropertyTrack
-  translate_y: PropertyTrack
-}
-
-export namespace ComponentTrack {
-  export function empty(componentUid: string): ComponentTrack {
-    return {
-      component:   componentUid,
-      opacity:     PropertyTrack.empty(),
-      scale:       PropertyTrack.empty(),
-      rotate:      PropertyTrack.empty(),
-      translate_x: PropertyTrack.empty(),
-      translate_y: PropertyTrack.empty(),
-    }
-  }
-}
-
-export interface PropertyTrack {
+export interface Track {
+  component_uid: string
+  prop: AnimProperty
   keyframes: Keyframe[]
 }
 
-export namespace PropertyTrack {
-  export function empty(): PropertyTrack {
-    return {keyframes: []}
+export enum AnimProperty {
+  Scale = 'scale',
+  Rotate = 'rotate',
+  TranslateX = 'translate_x',
+  TranslateY = 'translate_y',
+  Opacity = 'opacity',
+}
+
+export namespace Track {
+  export function empty(componentUid: string, prop: AnimProperty): Track {
+    return {
+      component_uid: componentUid,
+      prop:          prop,
+      keyframes:     [],
+    }
   }
 }
 
