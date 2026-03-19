@@ -333,9 +333,20 @@ export namespace PropertyTrack {
 export interface Tween {
   from: number
   to: number
-  duration: number
-  easing: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out'
+  timing: WellKnownTimingFunction | TimingBezier
 }
+export enum WellKnownTimingFunction {
+  Linear = 'linear',
+
+  EaseInQuad = 'ease-in-quad',
+  EaseOutQuad = 'ease-out-quad',
+  EaseInOutQuad = 'ease-in-out-quad',
+
+  EaseInCubic = 'ease-in-cubic',
+  EaseOutCubic = 'ease-out-cubic',
+  EaseInOutCubic = 'ease-in-out-cubic',
+}
+export type TimingBezier = [number, number, number, number]
 
 export interface EffectTrack {
   effects: Array<[start: number, effect: Effect]>
