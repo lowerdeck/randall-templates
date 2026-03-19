@@ -1,5 +1,5 @@
 import { set } from 'lodash'
-import { isPlainObject, objectEntries } from 'ytil'
+import { EnumUtil, isPlainObject, objectEntries } from 'ytil'
 
 export interface SceneSpec {
   width:  number
@@ -239,6 +239,12 @@ const $componentDefaultsCommon: Record<string, unknown> = {
   'style.border_radius': 0,
   'style.shadow_blur':   0,
   'style.shadow_offset': [0, 0],
+
+  'scale':       1,
+  'rotate':      0,
+  'translate_x': 0,
+  'translate_y': 0,
+  'opacity':     1,
 }
 
 const $stackComponentDefaults: Record<string, unknown> = {
@@ -310,6 +316,10 @@ export enum AnimProperty {
   TranslateX = 'translate_x',
   TranslateY = 'translate_y',
   Opacity = 'opacity',
+}
+
+export function isAnimProperty(prop: string): prop is AnimProperty {
+  return EnumUtil.values(AnimProperty).includes(prop as AnimProperty)
 }
 
 export namespace Track {
