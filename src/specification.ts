@@ -202,7 +202,7 @@ export enum FlexJustify {
 
 export function defaultComponent<C extends ComponentSpec>(type: C['$type'], id: string): C {
   const empty = emptyComponent(type, id)
-  const defaults = getDefaultValuesForComponentType(type)
+  const defaults = propertyDefaults(type)
   for (const [path, value] of objectEntries(defaults)) {
     set(empty, path, value)
   }
@@ -273,7 +273,7 @@ const $imageComponentDefaults: Record<string, unknown> = {
   'image_offset':    [0, 0],
 }
 
-export function getDefaultValuesForComponentType(type: ComponentType): Record<string, unknown> {
+export function propertyDefaults(type: ComponentType): Record<string, unknown> {
   switch (type) {
   case ComponentType.Text:
     return $textComponentDefaults
@@ -285,6 +285,11 @@ export function getDefaultValuesForComponentType(type: ComponentType): Record<st
   default:
     return $componentDefaultsCommon
   }
+}
+
+export function propertyDefault(type: ComponentType | undefined, prop: string): unknown {
+  const defaults = type != null ? propertyDefaults(type) : $componentDefaultsCommon
+  return defaults[prop]
 }
 
 //------
@@ -334,7 +339,7 @@ export namespace Track {
 
 export interface Keyframe {
   frame: number
-  value: number
+  value: Attribute<number>
   timing: WellKnownTimingFunction | TimingBezier
 }
 export enum WellKnownTimingFunction {
