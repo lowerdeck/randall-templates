@@ -134,7 +134,7 @@ export interface ContainerSpecCommon extends ComponentSpecCommon {
   children: Array<ComponentSpec | null>
 }
 
-export interface ComponentSpecCommon extends ComponentLayoutSpec, TransitionableSpec {
+export interface ComponentSpecCommon extends ComponentLayoutSpec {
   id:    string
   style: Record<string, any>
 
@@ -170,15 +170,13 @@ export interface ComponentLayoutSpec {
   padding_top?:    Attribute<number>
   padding_bottom?: Attribute<number>
 
-  transform_origin?: Attribute<[number, number]>
-}
-
-export interface TransitionableSpec {
   opacity?:     Attribute<number> // 0 - 1
   scale?:       Attribute<number> // 0 - 1
   rotate?:      Attribute<number> // degrees
   translate_x?: Attribute<number> // pixels
   translate_y?: Attribute<number> // pixels
+
+  transform_origin?: Attribute<[number, number]>
 }
 
 export enum FlexBasis {
