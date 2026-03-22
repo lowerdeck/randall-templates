@@ -1,6 +1,6 @@
 import { EnumUtil } from 'ytil'
 import { z } from 'zod'
-import { AnimProperty, Keyframe, Phase, WellKnownTimingFunction } from './specification'
+import { AnimProperty, Keyframe, Phase, PhaseType, WellKnownTimingFunction } from './specification'
 
 export enum ParamScope {
   Regular = 'regular',
@@ -92,6 +92,7 @@ const paramGroup = z.object({
 })
 
 const phase: z.ZodType<Phase> = z.object({
+  type: z.enum(PhaseType),
   name: z.string().max(64),
   from: z.number(),
   to:   z.number(),

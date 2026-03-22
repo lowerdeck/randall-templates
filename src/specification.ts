@@ -302,9 +302,17 @@ export interface AnimationsSpec {
 }
 
 export interface Phase {
+  type: PhaseType
   name: string
   from: number
   to: number
+}
+
+export enum PhaseType {
+  BuildIn = 'build-in',
+  Stable = 'stable',
+  Transition = 'transition',
+  BuildOut = 'build-out',
 }
 
 export interface Track {
