@@ -1,6 +1,6 @@
 import { Property } from '@jsep-plugin/object'
 import { SpreadElement } from '@jsep-plugin/spread'
-import { isArray, mapValues } from 'lodash'
+import { isArray, mapValues, omit } from 'lodash'
 import { errorMessage, isFunction, isPlainObject } from 'ytil'
 import { blacklist, global, jsep } from './jsep'
 import { Attribute, ComponentSpec, Effect } from './specification'
@@ -39,7 +39,7 @@ export class TemplateEvaluator {
         if ('$if' in val && !this.evaluateExpression(val.$if)) {
           return null
         } else {
-          return mapValues(val, iter)
+          return mapValues(omit(val, '$if'), iter)
         }
       } else if (isArray(val)) {
         return val.map(item => {
@@ -48,7 +48,7 @@ export class TemplateEvaluator {
             // The preview and renderer should simply skip them.
             return undefined
           } else {
-            return iter(item)
+            return iter(omit(item, '$if'))
           }
         })
       } else {

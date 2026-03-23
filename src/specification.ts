@@ -369,4 +369,5 @@ export type Effect = TypingEffect
 
 export interface TypingEffect {
   type: 'typing'
+  chars_per_second: number
 }
