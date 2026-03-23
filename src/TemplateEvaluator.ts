@@ -43,18 +43,23 @@ export class TemplateEvaluator {
         }
       } else if (isArray(val)) {
         return val.map(item => {
-          if (isPlainObject(item) && '$if' in item && !this.evaluateExpression(item.$if)) {
-            // If components are optional, return `undefined` such that the xpaths don't mess up.
-            // The preview and renderer should simply skip them.
-            return undefined
+          if (isPlainObject(item) && '$if' in item) {
+            if (!this.evaluateExpression(item.$if)) {
+              // If components are optional, return `undefined` such that the xpaths don't mess up.
+              // The preview and renderer should simply skip them.
+              return undefined
+            } else {
+              return iter(omit(item, '$if'))
+            }
           } else {
-            return iter(omit(item, '$if'))
+            return iter(item)
           }
         })
       } else {
         return val
       }
     }
+
     return iter(tree) as Evaluated<T>
   }
 
