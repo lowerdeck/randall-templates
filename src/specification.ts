@@ -148,13 +148,13 @@ export interface ComponentLayoutSpec {
   top?:    Attribute<number>
   bottom?: Attribute<number>
   
-  width?:  Attribute<number>
-  max_width?:  Attribute<number>
-  min_width?:  Attribute<number>
+  width?:  Attribute<SizeValue>
+  max_width?:  Attribute<SizeValue>
+  min_width?:  Attribute<SizeValue>
   
-  height?: Attribute<number>
-  max_height?: Attribute<number>
-  min_height?: Attribute<number>
+  height?: Attribute<SizeValue>
+  max_height?: Attribute<SizeValue>
+  min_height?: Attribute<SizeValue>
 
   flex_basis?:  Attribute<FlexBasis>
   flex_grow?:   Attribute<number>
@@ -178,6 +178,8 @@ export interface ComponentLayoutSpec {
 
   transform_origin?: Attribute<[number, number]>
 }
+
+export type SizeValue = number | `${number}%`
 
 export enum FlexBasis {
   Zero = 0,
