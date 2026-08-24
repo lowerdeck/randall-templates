@@ -24,6 +24,7 @@ export type ContainerSpec =
 
 export enum ComponentType {
   Image = 'image',
+  Video = 'video',
   Rectangle = 'rectangle',
   Text = 'text',
   ZStack = 'zstack',
@@ -79,13 +80,28 @@ export interface HStackSpec extends StackSpecCommon {
 
 export interface ImageSpec extends ContainerSpecCommon {
   $type:         ComponentType.Image
-  image:         TemplateImage | string | null
+  image:         TemplateMedia | string | null
   aspect_ratio?: number
   resize_mode?:  ResizeMode
 
   // These are only for resize_mode 'cover'.
-  image_placement?: ImagePlacement
+  image_placement?: ContentPlacement
   image_offset?: [number, number]
+}
+
+export interface VideoSpec extends ContainerSpecCommon {
+  $type: ComponentType.Video,
+  video: TemplateMedia | string | null
+  aspect_ratio?: number
+  resize_mode?: ResizeMode
+
+  // These are only for resize_mode 'cover'.
+  video_placement?: ContentPlacement
+  video_offset?: [number, number]
+
+  // Optionally the start and end times for the video if it needs to be trimmed.
+  trim_start?: number
+  trim_end?: number
 }
 
 export enum ResizeMode {
@@ -94,7 +110,7 @@ export enum ResizeMode {
   Stretch = 'stretch'
 }
 
-export enum ImagePlacement {
+export enum ContentPlacement {
   Center = 'center',
   Top = 'top',
   Bottom = 'bottom',
@@ -102,7 +118,7 @@ export enum ImagePlacement {
   Right = 'right',
 }
 
-export interface TemplateImage {
+export interface TemplateMedia {
   type: string
   binary: Uint8Array<ArrayBuffer>
 }
