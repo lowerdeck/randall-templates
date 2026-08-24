@@ -22,6 +22,7 @@ export type ContainerSpec =
   | VStackSpec
   | HStackSpec
   | ImageSpec
+  | VideoSpec
 
 export enum ComponentType {
   Image = 'image',
@@ -38,18 +39,21 @@ export type ContainerType =
   | ComponentType.VStack
   | ComponentType.HStack
   | ComponentType.Image
+  | ComponentType.Video
 
 export function isContainerType(type: ComponentType): type is ContainerType {
   if (type === ComponentType.ZStack) { return true }
   if (type === ComponentType.VStack) { return true }
   if (type === ComponentType.HStack) { return true }
   if (type === ComponentType.Image) { return true }
+  if (type === ComponentType.Video) { return true }
   return false
 }
 
 export function isZStackContainerType(type: ComponentType): type is ComponentType.ZStack {
   if (type === ComponentType.ZStack) { return true }
   if (type === ComponentType.Image) { return true }
+  if (type === ComponentType.Video) { return true }
   return false
 }
 
@@ -238,6 +242,8 @@ function emptyComponent<C extends ComponentSpec>(type: C['$type'], id: string): 
     return {$type: ComponentType.Text, id, style: {}, text: null} as TextSpec as C
   case ComponentType.Image:
     return {$type: ComponentType.Image, id, style: {}, image: null, children: []} as ImageSpec as C
+  case ComponentType.Video:
+    return {$type: ComponentType.Video, id, style: {}, video: null, children: []} as VideoSpec as C
   case ComponentType.Rectangle:
     return {$type: ComponentType.Rectangle, id, style: {}} as RectangleSpec as C
   default:
@@ -290,12 +296,23 @@ const $imageComponentDefaults: Record<string, unknown> = {
   'image_offset':    [0, 0],
 }
 
+const $videoComponentDefaults: Record<string, unknown> = {
+  ...$componentDefaultsCommon,
+
+  'aspect_ratio':    1,
+  'resize_mode':     ResizeMode.Contain,
+  'video_placement': 'center',
+  'video_offset':    [0, 0],
+}
+
 export function propertyDefaults(type: ComponentType): Record<string, unknown> {
   switch (type) {
   case ComponentType.Text:
     return $textComponentDefaults
   case ComponentType.Image:
     return $imageComponentDefaults
+  case ComponentType.Video:
+    return $videoComponentDefaults
   case ComponentType.HStack:
   case ComponentType.VStack:
     return $stackComponentDefaults
