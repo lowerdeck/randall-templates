@@ -12,6 +12,7 @@ export interface SceneSpec {
 
 export type ComponentSpec =
   | ImageSpec
+  | VideoSpec
   | RectangleSpec
   | TextSpec
   | ContainerSpec
