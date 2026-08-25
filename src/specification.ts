@@ -260,8 +260,14 @@ const $componentDefaultsCommon: Record<string, unknown> = {
 
   'style.border_width':  0,
   'style.border_radius': 0,
+
   'style.shadow_blur':   0,
   'style.shadow_offset': [0, 0],
+
+  'style.inset_shadow_blur':   0,
+  'style.inset_shadow_offset': [0, 0],
+
+  'style.blur': 0,
 
   'scale':       1,
   'rotate':      0,
