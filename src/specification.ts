@@ -41,6 +41,14 @@ export type ContainerType =
   | ComponentType.Image
   | ComponentType.Video
 
+export function isComponentSpec(arg: unknown): arg is ComponentSpec {
+  if (!isPlainObject(arg)) { return false }
+  if (!('$type' in arg)) { return false }
+  if (!EnumUtil.is(ComponentType, arg.$type)) { return false }
+
+  return true 
+}
+
 export function isContainerType(type: ComponentType): type is ContainerType {
   if (type === ComponentType.ZStack) { return true }
   if (type === ComponentType.VStack) { return true }
