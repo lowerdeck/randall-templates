@@ -136,6 +136,15 @@ export interface TemplateMedia {
   binary: Uint8Array<ArrayBuffer>
 }
 
+export namespace TemplateMedia {
+  export function is(arg: any): arg is TemplateMedia {
+    if (!isPlainObject(arg)) { return false }
+    if (!('type' in arg) || typeof arg.type !== 'string') { return false }
+    if (!('binary' in arg) || !(arg.binary instanceof Uint8Array)) { return false }
+    return true
+  }
+}
+
 export interface RectangleSpec extends ComponentSpecCommon {
   $type: ComponentType.Rectangle
 }
