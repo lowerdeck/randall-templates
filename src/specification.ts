@@ -335,7 +335,7 @@ const $shapeComponentDefaults: Record<string, unknown> = {
 const $textComponentDefaults: Record<string, unknown> = {
   ...$componentDefaultsCommon,
   
-  'style.color':          '#000000',
+  'style.fill':           '#000000',
   'style.font_family':    "Arial",
   'style.font_size':      32,
   'style.font_subfamily': 'Regular',
