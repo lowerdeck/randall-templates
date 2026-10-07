@@ -22,7 +22,7 @@ export function buildParam<P extends Param>(type: P['type'], name: string, label
 
   switch (type) {
   case 'text': return {type: 'text', multiline: false, ...common, ...extra} as TextParam as P
-  case 'boolean': return {type: 'boolean', ...common, ...extra} as BooleanParam as P
+  case 'boolean': return {type: 'boolean', yes_label: null, no_label: null, ...common, ...extra} as BooleanParam as P
   case 'choice': return {type: 'choice', variant: 'select', choices: [], ...common, ...extra} as ChoiceParam as P
   case 'image': return {type: 'image', ...common, ...extra} as ImageParam as P
   case 'number': return {type: 'number', int: true, ...common, ...extra} as NumberParam as P

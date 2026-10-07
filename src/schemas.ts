@@ -52,8 +52,8 @@ const booleanParam = z.object({
   type: z.literal('boolean'),
   ...paramCommon,
 
-  yes_label: z.string().max(64).optional(),
-  no_label:  z.string().max(64).optional(),
+  yes_label: z.string().min(1).max(64).nullable().default(null),
+  no_label:  z.string().min(1).max(64).nullable().default(null),
 })
 
 const choiceParam = z.object({
