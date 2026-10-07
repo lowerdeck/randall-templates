@@ -13,7 +13,7 @@ export interface SceneSpec {
 export type ComponentSpec =
   | ImageSpec
   | VideoSpec
-  | RectangleSpec
+  | ShapeSpec
   | TextSpec
   | ContainerSpec
 
@@ -27,7 +27,7 @@ export type ContainerSpec =
 export enum ComponentType {
   Image = 'image',
   Video = 'video',
-  Rectangle = 'rectangle',
+  Shape = 'shape',
   Text = 'text',
   ZStack = 'zstack',
   VStack = 'vstack',
@@ -145,9 +145,17 @@ export namespace TemplateMedia {
   }
 }
 
-export interface RectangleSpec extends ComponentSpecCommon {
-  $type: ComponentType.Rectangle
+export interface ShapeSpec extends ComponentSpecCommon {
+  $type: ComponentType.Shape
+
+  // SVG path data. Without a path, the shape is a (rounded) rectangle filling its bounds.
+  path?: string | null
+
+  // The coordinate space of the path, which is stretched to the bounds of the shape.
+  view_box?: [number, number]
 }
+
+export const defaultShapeViewBox: [number, number] = [100, 100]
 
 export interface TextSpec extends ComponentSpecCommon {
   $type: ComponentType.Text
@@ -261,8 +269,8 @@ function emptyComponent<C extends ComponentSpec>(type: C['$type'], id: string): 
     return {$type: ComponentType.Image, id, style: {}, image: null, children: []} as ImageSpec as C
   case ComponentType.Video:
     return {$type: ComponentType.Video, id, style: {}, video: null, children: []} as VideoSpec as C
-  case ComponentType.Rectangle:
-    return {$type: ComponentType.Rectangle, id, style: {}} as RectangleSpec as C
+  case ComponentType.Shape:
+    return {$type: ComponentType.Shape, id, style: {}} as ShapeSpec as C
   default:
     throw new Error(`Unknown component type: ${type}`)
   }
