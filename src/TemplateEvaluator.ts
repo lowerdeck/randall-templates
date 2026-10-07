@@ -3,6 +3,7 @@ import { SpreadElement } from '@jsep-plugin/spread'
 import { isArray, mapValues, omit } from 'lodash'
 import { errorMessage, isFunction, isPlainObject } from 'ytil'
 import { blacklist, global, jsep } from './jsep'
+import { binary, BinaryOperator, binaryOperators, unary, UnaryOperator, unaryOperators } from './operators'
 import { Attribute, ComponentSpec, Effect } from './specification'
 
 // Type declarations for jsep plugin types
@@ -246,13 +247,10 @@ export class TemplateEvaluator {
     case 'UnaryExpression': {
       const expr = node as jsep.UnaryExpression
 
-      const v = this.evaluateNode(expr.argument, depth + 1)
-      switch (node.operator) {
-      case '!': return !v
-      case '+': return +v
-      case '-': return -v
-      default: throw new Error(`Bad unary op: ${node.operator}`)
+      if (!unaryOperators.has(expr.operator)) {
+        throw new Error(`Bad unary op: ${expr.operator}`)
       }
+      return unary(expr.operator as UnaryOperator, this.evaluateNode(expr.argument, depth + 1))
     }
 
     case 'LogicalExpression': case 'BinaryExpression': {
@@ -271,22 +269,16 @@ export class TemplateEvaluator {
       }
 
       // Other operators, please do.
-      const right = this.evaluateNode(expr.right, depth + 1) 
+      const right = this.evaluateNode(expr.right, depth + 1)
+      if (binaryOperators.has(expr.operator)) {
+        return binary(expr.operator as BinaryOperator, left, right)
+      }
+
       switch (expr.operator) {
-      case '+': return left + right
-      case '-': return left - right
-      case '*': return left * right
-      case '/': return left / right
-      case '%': return left % right
-      case '**': return left ** right
       case '==': return left == right
       case '!=': return left != right
       case '===': return left === right
       case '!==': return left !== right
-      case '<': return left < right
-      case '<=': return left <= right
-      case '>': return left > right
-      case '>=': return left >= right
       default: throw new Error(`Bad binary op: ${node.operator}`)
       }
     }
