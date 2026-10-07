@@ -24,6 +24,7 @@ export type ContainerSpec =
   | HStackSpec
   | ImageSpec
   | VideoSpec
+  | ShapeSpec
 
 export enum ComponentType {
   Image = 'image',
@@ -41,6 +42,7 @@ export type ContainerType =
   | ComponentType.HStack
   | ComponentType.Image
   | ComponentType.Video
+  | ComponentType.Shape
 
 export function isComponentSpec(arg: unknown): arg is ComponentSpec {
   if (!isPlainObject(arg)) { return false }
@@ -56,6 +58,7 @@ export function isContainerType(type: ComponentType): type is ContainerType {
   if (type === ComponentType.HStack) { return true }
   if (type === ComponentType.Image) { return true }
   if (type === ComponentType.Video) { return true }
+  if (type === ComponentType.Shape) { return true }
   return false
 }
 
@@ -63,6 +66,7 @@ export function isZStackContainerType(type: ComponentType): type is ComponentTyp
   if (type === ComponentType.ZStack) { return true }
   if (type === ComponentType.Image) { return true }
   if (type === ComponentType.Video) { return true }
+  if (type === ComponentType.Shape) { return true }
   return false
 }
 
@@ -146,7 +150,7 @@ export namespace TemplateMedia {
   }
 }
 
-export interface ShapeSpec extends ComponentSpecCommon {
+export interface ShapeSpec extends ContainerSpecCommon {
   $type: ComponentType.Shape
 
   // SVG path data. Without a path, the shape is a (rounded) rectangle filling its bounds.
@@ -154,6 +158,17 @@ export interface ShapeSpec extends ComponentSpecCommon {
 
   // The coordinate space of the path, which is stretched to the bounds of the shape.
   view_box?: [number, number]
+
+  // How the shape masks its children.
+  mask_mode?: MaskMode
+}
+
+export enum MaskMode {
+  // Children are clipped to the shape's outline.
+  Clip = 'clip',
+
+  // Children are masked by the alpha of the shape's background.
+  Alpha = 'alpha',
 }
 
 export const defaultShapeViewBox: [number, number] = [100, 100]
@@ -272,7 +287,7 @@ function emptyComponent<C extends ComponentSpec>(type: C['$type'], id: string, n
   case ComponentType.Video:
     return {$type: ComponentType.Video, id, name, style: {}, video: null, children: []} as VideoSpec as C
   case ComponentType.Shape:
-    return {$type: ComponentType.Shape, id, name, style: {}} as ShapeSpec as C
+    return {$type: ComponentType.Shape, id, name, style: {}, children: []} as ShapeSpec as C
   default:
     throw new Error(`Unknown component type: ${type}`)
   }
@@ -311,6 +326,12 @@ const $stackComponentDefaults: Record<string, unknown> = {
   'gap':     0,
 }
 
+const $shapeComponentDefaults: Record<string, unknown> = {
+  ...$componentDefaultsCommon,
+
+  'mask_mode': MaskMode.Clip,
+}
+
 const $textComponentDefaults: Record<string, unknown> = {
   ...$componentDefaultsCommon,
   
@@ -342,6 +363,8 @@ export function propertyDefaults(type: ComponentType): Record<string, unknown> {
   switch (type) {
   case ComponentType.Text:
     return $textComponentDefaults
+  case ComponentType.Shape:
+    return $shapeComponentDefaults
   case ComponentType.Image:
     return $imageComponentDefaults
   case ComponentType.Video:
