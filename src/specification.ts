@@ -1,5 +1,6 @@
 import { set } from 'lodash'
 import { EnumUtil, isPlainObject, objectEntries } from 'ytil'
+import { componentId } from './ids'
 
 export interface SceneSpec {
   width:  number
@@ -182,6 +183,7 @@ export interface ContainerSpecCommon extends ComponentSpecCommon {
 
 export interface ComponentSpecCommon extends ComponentLayoutSpec {
   id:    string
+  name:  string
   style: Record<string, any>
 
   $if?: string
@@ -246,8 +248,8 @@ export enum FlexJustify {
   SpaceBetween = 'space-between',
 }
 
-export function defaultComponent<C extends ComponentSpec>(type: C['$type'], id: string): C {
-  const empty = emptyComponent(type, id)
+export function defaultComponent<C extends ComponentSpec>(type: C['$type'], name: string, id: string = componentId()): C {
+  const empty = emptyComponent(type, id, name)
   const defaults = propertyDefaults(type)
   for (const [path, value] of objectEntries(defaults)) {
     set(empty, path, value)
@@ -255,22 +257,22 @@ export function defaultComponent<C extends ComponentSpec>(type: C['$type'], id: 
   return empty
 }
 
-function emptyComponent<C extends ComponentSpec>(type: C['$type'], id: string): C {
+function emptyComponent<C extends ComponentSpec>(type: C['$type'], id: string, name: string): C {
   switch (type) {
   case ComponentType.ZStack:
-    return {$type: ComponentType.ZStack, id, style: {}, children: []} as ZStackSpec as C
+    return {$type: ComponentType.ZStack, id, name, style: {}, children: []} as ZStackSpec as C
   case ComponentType.HStack:
-    return {$type: ComponentType.HStack, id, style: {}, children: []} as HStackSpec as C
+    return {$type: ComponentType.HStack, id, name, style: {}, children: []} as HStackSpec as C
   case ComponentType.VStack:
-    return {$type: ComponentType.VStack, id, style: {}, children: []} as VStackSpec as C
+    return {$type: ComponentType.VStack, id, name, style: {}, children: []} as VStackSpec as C
   case ComponentType.Text:
-    return {$type: ComponentType.Text, id, style: {}, text: null} as TextSpec as C
+    return {$type: ComponentType.Text, id, name, style: {}, text: null} as TextSpec as C
   case ComponentType.Image:
-    return {$type: ComponentType.Image, id, style: {}, image: null, children: []} as ImageSpec as C
+    return {$type: ComponentType.Image, id, name, style: {}, image: null, children: []} as ImageSpec as C
   case ComponentType.Video:
-    return {$type: ComponentType.Video, id, style: {}, video: null, children: []} as VideoSpec as C
+    return {$type: ComponentType.Video, id, name, style: {}, video: null, children: []} as VideoSpec as C
   case ComponentType.Shape:
-    return {$type: ComponentType.Shape, id, style: {}} as ShapeSpec as C
+    return {$type: ComponentType.Shape, id, name, style: {}} as ShapeSpec as C
   default:
     throw new Error(`Unknown component type: ${type}`)
   }
@@ -383,7 +385,7 @@ export enum PhaseType {
 }
 
 export interface Track {
-  component_uid: string
+  component_id: string
   prop: AnimProperty
   keyframes: Keyframe[]
 }
@@ -401,11 +403,11 @@ export function isAnimProperty(prop: string): prop is AnimProperty {
 }
 
 export namespace Track {
-  export function empty(componentUid: string, prop: AnimProperty): Track {
+  export function empty(componentId: string, prop: AnimProperty): Track {
     return {
-      component_uid: componentUid,
-      prop:          prop,
-      keyframes:     [],
+      component_id: componentId,
+      prop:         prop,
+      keyframes:    [],
     }
   }
 }

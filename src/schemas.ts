@@ -124,9 +124,9 @@ function parseTiming(raw: string): Keyframe['timing'] {
 }
 
 const track = z.object({
-  component_uid: z.string(),
-  prop:          z.enum(AnimProperty),
-  keyframes:     z.array(keyframe),
+  component_id: z.string(),
+  prop:         z.enum(AnimProperty),
+  keyframes:    z.array(keyframe),
 })
 
 const animations = z.object({
