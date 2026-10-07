@@ -171,6 +171,33 @@ export enum MaskMode {
   Alpha = 'alpha',
 }
 
+export enum TextTransform {
+  None       = 'none',
+  Uppercase  = 'uppercase',
+  Lowercase  = 'lowercase',
+  Capitalize = 'capitalize',
+}
+
+// How a component is blended onto what's beneath it, like CSS's mix-blend-mode.
+export enum BlendMode {
+  Normal     = 'normal',
+  Multiply   = 'multiply',
+  Screen     = 'screen',
+  Overlay    = 'overlay',
+  Darken     = 'darken',
+  Lighten    = 'lighten',
+  ColorDodge = 'color-dodge',
+  ColorBurn  = 'color-burn',
+  HardLight  = 'hard-light',
+  SoftLight  = 'soft-light',
+  Difference = 'difference',
+  Exclusion  = 'exclusion',
+  Hue        = 'hue',
+  Saturation = 'saturation',
+  Color      = 'color',
+  Luminosity = 'luminosity',
+}
+
 export const defaultShapeViewBox: [number, number] = [100, 100]
 
 export interface TextSpec extends ComponentSpecCommon {
@@ -311,6 +338,8 @@ const $componentDefaultsCommon: Record<string, unknown> = {
 
   'style.blur': 0,
 
+  'style.blend_mode': BlendMode.Normal,
+
   'scale':       1,
   'rotate':      0,
   'translate_x': 0,
@@ -339,6 +368,9 @@ const $textComponentDefaults: Record<string, unknown> = {
   'style.font_family':    "Arial",
   'style.font_size':      32,
   'style.font_subfamily': 'Regular',
+
+  'style.text_stroke_width': 0,
+  'style.text_transform':    TextTransform.None,
 }
 
 const $imageComponentDefaults: Record<string, unknown> = {
