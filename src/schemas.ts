@@ -127,6 +127,7 @@ const track = z.object({
   component_id: z.string(),
   prop:         z.enum(AnimProperty),
   keyframes:    z.array(keyframe),
+  stagger:      z.object({overlap: z.number().min(0)}).optional(),
 })
 
 const animations = z.object({

@@ -443,6 +443,17 @@ export interface Track {
   component_id: string
   prop: AnimProperty
   keyframes: Keyframe[]
+
+  /**
+   * Animates the children of a container, or the letters of a text, one after the other. Together, they fill the
+   * keyframe span.
+   */
+  stagger?: Stagger
+}
+
+export interface Stagger {
+  /** The number of frames by which consecutive items' animations overlap. */
+  overlap: number
 }
 
 export enum AnimProperty {
@@ -484,14 +495,3 @@ export enum WellKnownTimingFunction {
   EaseInOutCubic = 'ease-in-out-cubic',
 }
 export type TimingBezier = [number, number, number, number]
-
-export interface EffectTrack {
-  effects: Array<[start: number, effect: Effect]>
-}
-
-export type Effect = TypingEffect
-
-export interface TypingEffect {
-  type: 'typing'
-  chars_per_second: number
-}
