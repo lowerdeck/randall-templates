@@ -34,6 +34,20 @@ export class Rect {
 
   public static zero = () => new Rect(0, 0, 0, 0)
 
+  public static bounding(points: Array<{x: number, y: number}>) {
+    const xs = points.map(it => it.x)
+    const ys = points.map(it => it.y)
+    const left = Math.min(...xs)
+    const top = Math.min(...ys)
+
+    return new Rect(
+      left,
+      top,
+      Math.max(...xs) - left,
+      Math.max(...ys) - top,
+    )
+  }
+
   public static around(rects: Rect[]) {
     const left = Math.min(...rects.map(it => it.left))
     const top = Math.min(...rects.map(it => it.top))
