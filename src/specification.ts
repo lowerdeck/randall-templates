@@ -172,29 +172,29 @@ export enum MaskMode {
 }
 
 export enum TextTransform {
-  None       = 'none',
-  Uppercase  = 'uppercase',
-  Lowercase  = 'lowercase',
+  None = 'none',
+  Uppercase = 'uppercase',
+  Lowercase = 'lowercase',
   Capitalize = 'capitalize',
 }
 
 // How a component is blended onto what's beneath it, like CSS's mix-blend-mode.
 export enum BlendMode {
-  Normal     = 'normal',
-  Multiply   = 'multiply',
-  Screen     = 'screen',
-  Overlay    = 'overlay',
-  Darken     = 'darken',
-  Lighten    = 'lighten',
+  Normal = 'normal',
+  Multiply = 'multiply',
+  Screen = 'screen',
+  Overlay = 'overlay',
+  Darken = 'darken',
+  Lighten = 'lighten',
   ColorDodge = 'color-dodge',
-  ColorBurn  = 'color-burn',
-  HardLight  = 'hard-light',
-  SoftLight  = 'soft-light',
+  ColorBurn = 'color-burn',
+  HardLight = 'hard-light',
+  SoftLight = 'soft-light',
   Difference = 'difference',
-  Exclusion  = 'exclusion',
-  Hue        = 'hue',
+  Exclusion = 'exclusion',
+  Hue = 'hue',
   Saturation = 'saturation',
-  Color      = 'color',
+  Color = 'color',
   Luminosity = 'luminosity',
 }
 
