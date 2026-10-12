@@ -70,12 +70,24 @@ const choiceParam = z.object({
   ])),
 })
 
+const locationParam = z.object({
+  type: z.literal('location'),
+  ...paramCommon,
+})
+
+const boundsParam = z.object({
+  type: z.literal('bounds'),
+  ...paramCommon,
+})
+
 const param = z.discriminatedUnion('type', [
   textParam,
   imageParam,
   numberParam,
   booleanParam,
   choiceParam,
+  locationParam,
+  boundsParam,
 ])
 
 export const paramTypes = [
@@ -84,6 +96,8 @@ export const paramTypes = [
   'number', 
   'boolean',
   'choice',
+  'location',
+  'bounds',
 ] as const
 
 const paramGroup = z.object({
@@ -148,12 +162,16 @@ export type Param =
   | NumberParam
   | BooleanParam
   | ChoiceParam
+  | LocationParam
+  | BoundsParam
 
 export type TextParam = z.output<typeof textParam>
 export type ImageParam = z.output<typeof imageParam>
 export type NumberParam = z.output<typeof numberParam>
 export type BooleanParam = z.output<typeof booleanParam>
 export type ChoiceParam = z.output<typeof choiceParam>
+export type LocationParam = z.output<typeof locationParam>
+export type BoundsParam = z.output<typeof boundsParam>
 
 export interface ParamGroup {
   group: string

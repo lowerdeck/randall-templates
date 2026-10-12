@@ -14,8 +14,8 @@ export interface SceneSpec {
 export type ComponentSpec =
   | ImageSpec
   | VideoSpec
-  | ShapeSpec
   | TextSpec
+  | WidgetSpec
   | ContainerSpec
 
 export type ContainerSpec =
@@ -24,16 +24,15 @@ export type ContainerSpec =
   | HStackSpec
   | ImageSpec
   | VideoSpec
-  | ShapeSpec
 
 export enum ComponentType {
   Image = 'image',
   Video = 'video',
-  Shape = 'shape',
   Text = 'text',
   ZStack = 'zstack',
   VStack = 'vstack',
   HStack = 'hstack',
+  Widget = 'widget',
 }
 
 export type ContainerType =
@@ -42,7 +41,6 @@ export type ContainerType =
   | ComponentType.HStack
   | ComponentType.Image
   | ComponentType.Video
-  | ComponentType.Shape
 
 export function isComponentSpec(arg: unknown): arg is ComponentSpec {
   if (!isPlainObject(arg)) { return false }
@@ -58,7 +56,6 @@ export function isContainerType(type: ComponentType): type is ContainerType {
   if (type === ComponentType.HStack) { return true }
   if (type === ComponentType.Image) { return true }
   if (type === ComponentType.Video) { return true }
-  if (type === ComponentType.Shape) { return true }
   return false
 }
 
@@ -66,7 +63,6 @@ export function isZStackContainerType(type: ComponentType): type is ComponentTyp
   if (type === ComponentType.ZStack) { return true }
   if (type === ComponentType.Image) { return true }
   if (type === ComponentType.Video) { return true }
-  if (type === ComponentType.Shape) { return true }
   return false
 }
 
@@ -150,27 +146,6 @@ export namespace TemplateMedia {
   }
 }
 
-export interface ShapeSpec extends ContainerSpecCommon {
-  $type: ComponentType.Shape
-
-  // SVG path data. Without a path, the shape is a (rounded) rectangle filling its bounds.
-  path?: string | null
-
-  // The coordinate space of the path, which is stretched to the bounds of the shape.
-  view_box?: [number, number]
-
-  // How the shape masks its children.
-  mask_mode?: MaskMode
-}
-
-export enum MaskMode {
-  // Children are clipped to the shape's outline.
-  Clip = 'clip',
-
-  // Children are masked by the alpha of the shape's background.
-  Alpha = 'alpha',
-}
-
 export enum TextTransform {
   None = 'none',
   Uppercase = 'uppercase',
@@ -198,11 +173,17 @@ export enum BlendMode {
   Luminosity = 'luminosity',
 }
 
-export const defaultShapeViewBox: [number, number] = [100, 100]
-
 export interface TextSpec extends ComponentSpecCommon {
   $type: ComponentType.Text
   text:  string | null
+}
+
+// An instance of a widget: a component with hard-wired behavior (like a map), configured through props. The props
+// are described by the params in the widget's definition.
+export interface WidgetSpec extends ComponentSpecCommon {
+  $type:  ComponentType.Widget
+  widget: string
+  props:  Record<string, Attribute<unknown>>
 }
 
 //------
@@ -313,8 +294,8 @@ function emptyComponent<C extends ComponentSpec>(type: C['$type'], id: string, n
     return {$type: ComponentType.Image, id, name, style: {}, image: null, children: []} as ImageSpec as C
   case ComponentType.Video:
     return {$type: ComponentType.Video, id, name, style: {}, video: null, children: []} as VideoSpec as C
-  case ComponentType.Shape:
-    return {$type: ComponentType.Shape, id, name, style: {}, children: []} as ShapeSpec as C
+  case ComponentType.Widget:
+    return {$type: ComponentType.Widget, id, name, style: {}, widget: '', props: {}} as WidgetSpec as C
   default:
     throw new Error(`Unknown component type: ${type}`)
   }
@@ -355,12 +336,6 @@ const $stackComponentDefaults: Record<string, unknown> = {
   'gap':     0,
 }
 
-const $shapeComponentDefaults: Record<string, unknown> = {
-  ...$componentDefaultsCommon,
-
-  'mask_mode': MaskMode.Clip,
-}
-
 const $textComponentDefaults: Record<string, unknown> = {
   ...$componentDefaultsCommon,
   
@@ -395,8 +370,6 @@ export function propertyDefaults(type: ComponentType): Record<string, unknown> {
   switch (type) {
   case ComponentType.Text:
     return $textComponentDefaults
-  case ComponentType.Shape:
-    return $shapeComponentDefaults
   case ComponentType.Image:
     return $imageComponentDefaults
   case ComponentType.Video:

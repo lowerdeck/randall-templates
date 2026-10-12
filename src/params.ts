@@ -1,8 +1,11 @@
 import { z } from 'zod'
+import { GeoPoint } from './geo'
 import {
   BooleanParam,
+  BoundsParam,
   ChoiceParam,
   ImageParam,
+  LocationParam,
   NumberParam,
   Param,
   ParamScope,
@@ -26,6 +29,8 @@ export function buildParam<P extends Param>(type: P['type'], name: string, label
   case 'choice': return {type: 'choice', variant: 'select', choices: [], ...common, ...extra} as ChoiceParam as P
   case 'image': return {type: 'image', ...common, ...extra} as ImageParam as P
   case 'number': return {type: 'number', int: true, ...common, ...extra} as NumberParam as P
+  case 'location': return {type: 'location', ...common, ...extra} as LocationParam as P
+  case 'bounds': return {type: 'bounds', ...common, ...extra} as BoundsParam as P
   }
 }
 
@@ -52,6 +57,8 @@ export function paramSchema(param: Param): z.ZodType {
   case 'number': return numberParamSchema(param)
   case 'boolean': return booleanParamSchema(param)
   case 'choice': return choiceParamSchema(param)
+  case 'location': return locationParamSchema(param)
+  case 'bounds': return boundsParamSchema(param)
   }
 }
 
@@ -138,6 +145,34 @@ function choiceParamSchema(param: ChoiceParam): z.ZodType {
     message: `Must be one of: ${validValues.join(', ')}`,
   },
   )
+}
+
+function locationParamSchema(_param: LocationParam): z.ZodType {
+  return z.union([
+    z.object({
+      lat: z.number().min(-90).max(90),
+      lng: z.number().min(-180).max(180),
+    }),
+    z.string().transform((val, ctx) => {
+      const point = GeoPoint.parse(val)
+      if (point == null) {
+        ctx.addIssue({code: 'custom', message: 'Invalid location, expected "lat, lng"'})
+        return z.NEVER
+      }
+      return point
+    }),
+  ])
+}
+
+function boundsParamSchema(_param: BoundsParam): z.ZodType {
+  return z.object({
+    west:  z.number().min(-180).max(180),
+    south: z.number().min(-90).max(90),
+    east:  z.number().min(-180).max(180),
+    north: z.number().min(-90).max(90),
+  }).refine(bounds => bounds.north > bounds.south, {
+    message: 'North must be above south',
+  })
 }
 
 // #endregion
