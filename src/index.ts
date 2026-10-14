@@ -1,5 +1,4 @@
 export * from './TemplateEvaluator'
-export * from './geo'
 export * from './ids'
 export * from './jsep'
 export * from './layout'
