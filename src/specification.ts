@@ -396,6 +396,9 @@ export interface AnimationsSpec {
    */
   phases: Phase[]
   tracks: Track[]
+
+  /** The frames of the animations that widgets do by themselves, like a map's flight. */
+  widget_tracks?: WidgetTrack[]
 }
 
 export interface Phase {
@@ -449,6 +452,17 @@ export namespace Track {
       keyframes:    [],
     }
   }
+}
+
+/**
+ * When a widget does one of its animations, which it offers by name depending on its props. It has no keyframes of
+ * its own: the widget animates from `from` up to and including `to`.
+ */
+export interface WidgetTrack {
+  component_id: string
+  animation:    string
+  from:         number
+  to:           number
 }
 
 export interface Keyframe {

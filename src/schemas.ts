@@ -130,9 +130,17 @@ const track = z.object({
   stagger:      z.object({overlap: z.number().min(0)}).optional(),
 })
 
+const widgetTrack = z.object({
+  component_id: z.string(),
+  animation:    z.string(),
+  from:         z.number().int().min(0),
+  to:           z.number().int().min(0),
+})
+
 const animations = z.object({
-  phases: z.array(phase),
-  tracks: z.array(track),
+  phases:        z.array(phase),
+  tracks:        z.array(track),
+  widget_tracks: z.array(widgetTrack).optional(),
 })
 
 export const schemas = {
