@@ -1,5 +1,5 @@
 {
-  "name": "templates",
+  "name": "@lowerdeck/templates",
   "version": "1.0.0",
   "description": "Randall the Renderer templating engine.",
   "author": "Joost Lubach",
