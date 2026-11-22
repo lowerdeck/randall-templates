@@ -1,5 +1,5 @@
 import { isArray } from 'lodash'
-import { Insets } from 'ytil'
+import { Insets } from '@mosdev/ytil'
 import { Size } from './Size'
 import { Vector } from './Vector'
 

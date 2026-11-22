@@ -1,4 +1,4 @@
-import { EnumUtil } from 'ytil'
+import { EnumUtil } from '@mosdev/ytil'
 import { z } from 'zod'
 import { AnimProperty, Keyframe, Phase, PhaseType, WellKnownTimingFunction } from './specification'
 

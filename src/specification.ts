@@ -1,5 +1,5 @@
 import { set } from 'lodash'
-import { EnumUtil, isPlainObject, objectEntries } from 'ytil'
+import { EnumUtil, isPlainObject, objectEntries } from '@mosdev/ytil'
 import { componentId } from './ids'
 
 export interface SceneSpec {

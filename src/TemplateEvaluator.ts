@@ -1,7 +1,7 @@
 import { Property } from '@jsep-plugin/object'
 import { SpreadElement } from '@jsep-plugin/spread'
 import { isArray, mapValues, omit } from 'lodash'
-import { errorMessage, isFunction, isPlainObject } from 'ytil'
+import { errorMessage, isFunction, isPlainObject } from '@mosdev/ytil'
 import { blacklist, global, jsep } from './jsep'
 import { binary, BinaryOperator, binaryOperators, unary, UnaryOperator, unaryOperators } from './operators'
 import { Attribute, ComponentSpec } from './specification'
