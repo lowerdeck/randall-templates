@@ -1,5 +1,5 @@
-import { set } from 'lodash'
 import { EnumUtil, isPlainObject, objectEntries } from '@mosdev/ytil'
+import { set } from 'lodash'
 import { componentId } from './ids'
 
 export interface SceneSpec {
@@ -254,8 +254,9 @@ export interface ComponentLayoutSpec {
   rotate?:      Attribute<number> // degrees
   translate_x?: Attribute<number> // pixels
   translate_y?: Attribute<number> // pixels
-
   transform_origin?: Attribute<[number, number]>
+
+  clip?: Attribute<boolean>
 }
 
 export type SizeValue = number | `${number}%`
