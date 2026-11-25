@@ -1,6 +1,6 @@
 import { EnumUtil } from '@mosdev/ytil'
 import { z } from 'zod'
-import { AnimProperty, Keyframe, Phase, PhaseType, WellKnownTimingFunction } from './specification'
+import { AnimProperty, Keyframe, Phase, PhaseType, StaggerOrder, TextUnit, WellKnownTimingFunction } from './specification'
 
 export enum ParamScope {
   Regular = 'regular',
@@ -127,7 +127,11 @@ const track = z.object({
   component_id: z.string(),
   prop:         z.enum(AnimProperty),
   keyframes:    z.array(keyframe),
-  stagger:      z.object({overlap: z.number().min(0)}).optional(),
+  stagger:      z.object({
+    overlap: z.number().min(0),
+    unit:    z.enum(TextUnit).optional(),
+    order:   z.enum(StaggerOrder).optional(),
+  }).optional(),
 })
 
 const widgetTrack = z.object({

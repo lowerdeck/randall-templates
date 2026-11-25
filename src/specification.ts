@@ -146,6 +146,14 @@ export namespace TemplateMedia {
   }
 }
 
+/** How text is divided when an effect, like a gradient fill or a staggered animation, is applied to it. */
+export enum TextUnit {
+  Block = 'block',
+  Line = 'line',
+  Word = 'word',
+  Letter = 'letter',
+}
+
 export enum TextTransform {
   None = 'none',
   Uppercase = 'uppercase',
@@ -346,6 +354,7 @@ const $textComponentDefaults: Record<string, unknown> = {
 
   'style.text_stroke_width': 0,
   'style.text_transform':    TextTransform.None,
+  'style.fill_scope':        TextUnit.Block,
 }
 
 const $imageComponentDefaults: Record<string, unknown> = {
@@ -421,8 +430,8 @@ export interface Track {
   keyframes: Keyframe[]
 
   /**
-   * Animates the children of a container, or the letters of a text, one after the other. Together, they fill the
-   * keyframe span.
+   * Animates the children of a container, or the lines, words or letters of a text, one after the other. Together,
+   * they fill the keyframe span.
    */
   stagger?: Stagger
 }
@@ -430,6 +439,18 @@ export interface Track {
 export interface Stagger {
   /** The number of frames by which consecutive items' animations overlap. */
   overlap: number
+
+  /** For a text, what is staggered. Letters by default; ignored for containers. */
+  unit?: TextUnit
+
+  order?: StaggerOrder
+}
+
+export enum StaggerOrder {
+  Forward = 'forward',
+  Reverse = 'reverse',
+  FromCenter = 'from_center',
+  Random = 'random',
 }
 
 export enum AnimProperty {
