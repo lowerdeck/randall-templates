@@ -335,6 +335,8 @@ const $componentDefaultsCommon: Record<string, unknown> = {
   'translate_x': 0,
   'translate_y': 0,
   'opacity':     1,
+
+  'clip': false,
 }
 
 const $stackComponentDefaults: Record<string, unknown> = {
