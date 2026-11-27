@@ -3,15 +3,9 @@ import { Phase, PhaseType } from '../specification'
 
 describe("minPhaseFrames", () => {
 
-  it("requires half a second for a stable phase, rounded up", () => {
-    expect(minPhaseFrames({type: PhaseType.Stable}, 25)).toBe(13)
-    expect(minPhaseFrames({type: PhaseType.Stable}, 50)).toBe(25)
-  })
-
-  it("requires a single frame for other phases", () => {
-    expect(minPhaseFrames({type: PhaseType.BuildIn}, 25)).toBe(1)
-    expect(minPhaseFrames({type: PhaseType.Transition}, 25)).toBe(1)
-    expect(minPhaseFrames({type: PhaseType.BuildOut}, 25)).toBe(1)
+  it("requires half a second, rounded up", () => {
+    expect(minPhaseFrames(25)).toBe(13)
+    expect(minPhaseFrames(50)).toBe(25)
   })
 
 })
@@ -22,16 +16,16 @@ describe("tooShortPhases", () => {
     return {name, type, from, to}
   }
 
-  it("lists the stable phases shorter than the minimum", () => {
+  it("lists the phases shorter than the minimum, of any type", () => {
     const phases = [
-      phase('in', PhaseType.BuildIn, 0, 2),
-      phase('stable', PhaseType.Stable, 2, 14),
-      phase('out', PhaseType.BuildOut, 14, 16),
+      phase('in', PhaseType.BuildIn, 0, 12),
+      phase('stable', PhaseType.Stable, 12, 30),
+      phase('out', PhaseType.BuildOut, 30, 32),
     ]
-    expect(tooShortPhases(phases, 25).map(it => it.name)).toEqual(['stable'])
+    expect(tooShortPhases(phases, 25).map(it => it.name)).toEqual(['in', 'out'])
   })
 
-  it("accepts stable phases of the minimum length", () => {
+  it("accepts phases of the minimum length", () => {
     expect(tooShortPhases([phase('stable', PhaseType.Stable, 0, 13)], 25)).toEqual([])
   })
 

@@ -1,12 +1,9 @@
-import { Phase, PhaseType } from '../specification'
-
 /**
- * The fewest frames a phase may span. A stable phase is held or looped by playout systems, which choke on very short
- * clips (Cuez won't transcode one under half a second).
+ * The fewest frames a phase may span. Each phase is output as a separate clip, and playout systems choke on very
+ * short ones (Cuez won't transcode a clip under half a second).
  */
-export function minPhaseFrames(phase: Pick<Phase, 'type'>, fps: number): number {
-  if (phase.type !== PhaseType.Stable) { return 1 }
-  return Math.ceil(MIN_STABLE_PHASE_SECONDS * fps)
+export function minPhaseFrames(fps: number): number {
+  return Math.ceil(MIN_PHASE_SECONDS * fps)
 }
 
-export const MIN_STABLE_PHASE_SECONDS = 0.5
+export const MIN_PHASE_SECONDS = 0.5
