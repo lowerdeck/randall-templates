@@ -409,6 +409,9 @@ export interface AnimationsSpec {
   phases: Phase[]
   tracks: Track[]
 
+  /** Frames that are outputted as still images, next to the phases. */
+  stills?: Still[]
+
   /** The frames of the animations that widgets do by themselves, like a map's flight. */
   widget_tracks?: WidgetTrack[]
 }
@@ -418,6 +421,11 @@ export interface Phase {
   name: string
   from: number
   to: number
+}
+
+export interface Still {
+  name:  string
+  frame: number
 }
 
 export enum PhaseType {
