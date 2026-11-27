@@ -1,6 +1,6 @@
-import { EnumUtil } from '@mosdev/ytil'
 import { z } from 'zod'
-import { AnimProperty, Keyframe, Phase, PhaseType, StaggerOrder, TextUnit, WellKnownTimingFunction } from './specification'
+import { AnimProperty, ComponentSpec, Keyframe, Phase, PhaseType, StaggerOrder, TextUnit } from './specification'
+import { INVALID_TIMING_MESSAGE, parseTiming } from './timing'
 
 export enum ParamScope {
   Regular = 'regular',
@@ -98,30 +98,19 @@ const phase: z.ZodType<Phase> = z.object({
   to:   z.number(),
 })
 
+const timing = z.unknown().transform((raw, ctx) => {
+  const parsed = parseTiming(raw)
+  if (parsed != null) { return parsed }
+
+  ctx.issues.push({code: 'custom', input: raw, message: `Invalid timing ${JSON.stringify(raw)}. ${INVALID_TIMING_MESSAGE}`})
+  return z.NEVER
+})
+
 const keyframe: z.ZodType<Keyframe> = z.object({
   frame:  z.number(),
   value:  z.any(),
-  timing: z.string().transform(parseTiming),
+  timing: timing,
 })
-
-function parseTiming(raw: string): Keyframe['timing'] {
-  if (EnumUtil.values(WellKnownTimingFunction).includes(raw as WellKnownTimingFunction)) {
-    return raw as WellKnownTimingFunction
-  }
-
-  if (raw.startsWith('cubic-bezier(') && raw.endsWith(')')) {
-    const content = raw.slice('cubic-bezier('.length, -1)
-    const parts = content.split(',').map(part => part.trim())
-    if (parts.length === 4) {
-      const nums = parts.map(part => Number(part))
-      if (nums.every(num => !isNaN(num))) {
-        return nums as Keyframe['timing']
-      }
-    }
-  }
-
-  throw new Error(`Invalid timing: ${raw}`)
-}
 
 const track = z.object({
   component_id: z.string(),
@@ -147,11 +136,19 @@ const animations = z.object({
   widget_tracks: z.array(widgetTrack).optional(),
 })
 
+const version = z.object({
+  params:     z.array(paramGroup),
+  vars:       z.record(z.string().max(64), z.any()),
+  components: z.array(z.any()) as z.ZodType<Array<ComponentSpec | null>>,
+  animations: animations,
+})
+
 export const schemas = {
   params: z.array(paramGroup).default(() => []),
   paramGroup,
   param,
   animations,
+  version,
 }
 
 export type Param =

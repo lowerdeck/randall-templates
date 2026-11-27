@@ -505,4 +505,4 @@ export enum WellKnownTimingFunction {
   EaseOutCubic = 'ease-out-cubic',
   EaseInOutCubic = 'ease-in-out-cubic',
 }
-export type TimingBezier = [number, number, number, number]
+export type TimingBezier = `cubic-bezier(${string})`
