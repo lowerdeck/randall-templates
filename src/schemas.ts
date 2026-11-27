@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { AnimProperty, ComponentSpec, Keyframe, Phase, PhaseType, StaggerOrder, TextUnit } from './specification'
+import { AnimProperty, ComponentSpec, Keyframe, Phase, PhaseType, StaggerOrder, Still, TextUnit } from './specification'
 import { INVALID_TIMING_MESSAGE, parseTiming } from './timing'
 
 export enum ParamScope {
@@ -98,6 +98,11 @@ const phase: z.ZodType<Phase> = z.object({
   to:   z.number(),
 })
 
+const still: z.ZodType<Still> = z.object({
+  name:  z.string().max(64),
+  frame: z.number().int().min(0),
+})
+
 const timing = z.unknown().transform((raw, ctx) => {
   const parsed = parseTiming(raw)
   if (parsed != null) { return parsed }
@@ -132,6 +137,7 @@ const widgetTrack = z.object({
 
 const animations = z.object({
   phases:        z.array(phase),
+  stills:        z.array(still).optional(),
   tracks:        z.array(track),
   widget_tracks: z.array(widgetTrack).optional(),
 })
