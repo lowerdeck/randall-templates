@@ -1,5 +1,5 @@
 import { OutputFiletype, outputFiletypeKind, OutputKind } from './OutputFiletype'
-import { defaultVideoCodec, videoCodec } from './videoCodecs'
+import { defaultVideoCodec, videoCodecContainers } from './videoCodecs'
 
 /**
  * A format to output a phase, still or template in. Serialized as a string, which is understood by the renderer:
@@ -70,7 +70,7 @@ export class OutputFormat {
 
   /** In the given container, or the first one the codec fits in. */
   public static video(codec: string, container?: OutputFiletype) {
-    const fileType = container ?? videoCodec(codec)?.containers[0] ?? OutputFiletype.QuickTime
+    const fileType = container ?? videoCodecContainers(codec)[0]
     if (outputFiletypeKind(fileType) !== 'video') {
       throw new TypeError(`Not a video container: ${fileType}`)
     }
@@ -89,10 +89,10 @@ export class OutputFormat {
     return this.kind === 'video'
   }
 
+  /** Only known for images. */
   public get lossless() {
     if (this.fileType === OutputFiletype.PNG) { return true }
     if (this.fileType === OutputFiletype.WebP) { return this.quality == null }
-    if (this.isVideo) { return videoCodec(this.codec!)?.lossless ?? false }
     return false
   }
 
