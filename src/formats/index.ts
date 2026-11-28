@@ -1,5 +1,6 @@
 export * from './isAnimated'
 export * from './OutputFiletype'
 export * from './OutputFormat'
+export * from './outputEnabled'
 export * from './templateOutputs'
 export * from './videoCodecs'

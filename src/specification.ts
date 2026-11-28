@@ -412,6 +412,9 @@ export interface AnimationsSpec {
   /** Frames that are outputted as still images, next to the phases. */
   stills?: Still[]
 
+  /** Whether the animation as a whole is output too (see `isFullOutputEnabled`). */
+  full?: boolean
+
   /** The frames of the animations that widgets do by themselves, like a map's flight. */
   widget_tracks?: WidgetTrack[]
 }
@@ -423,6 +426,8 @@ export interface Phase {
   to: number
   /** A video format (see `OutputFormat`), overriding the template's. */
   format?: string
+  /** Whether the phase is output when rendering; it is unless false. */
+  enabled?: boolean
 }
 
 export interface Still {
@@ -430,6 +435,8 @@ export interface Still {
   frame: number
   /** An image format (see `OutputFormat`), overriding the template's. */
   format?: string
+  /** Whether the still is output when rendering; it is unless false. */
+  enabled?: boolean
 }
 
 export enum PhaseType {

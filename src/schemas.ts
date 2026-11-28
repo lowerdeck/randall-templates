@@ -97,13 +97,15 @@ const phase: z.ZodType<Phase> = z.object({
   name: z.string().max(64),
   from:   z.number(),
   to:     z.number(),
-  format: outputFormat('video').optional(),
+  format:  outputFormat('video').optional(),
+  enabled: z.boolean().optional(),
 })
 
 const still: z.ZodType<Still> = z.object({
   name:   z.string().max(64),
   frame:  z.number().int().min(0),
-  format: outputFormat('image').optional(),
+  format:  outputFormat('image').optional(),
+  enabled: z.boolean().optional(),
 })
 
 function outputFormat(kind: OutputKind) {
@@ -150,6 +152,7 @@ const animations = z.object({
   stills:        z.array(still).optional(),
   tracks:        z.array(track),
   widget_tracks: z.array(widgetTrack).optional(),
+  full:          z.boolean().optional(),
 })
 
 const version = z.object({

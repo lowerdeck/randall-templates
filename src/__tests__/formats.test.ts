@@ -1,4 +1,4 @@
-import { OutputFiletype, OutputFormat, templateOutputs, videoCodecList } from '../formats'
+import { isFullOutputEnabled, isOutputEnabled, OutputFiletype, OutputFormat, templateOutputs, videoCodecList } from '../formats'
 import { AnimationsSpec, AnimProperty, PhaseType } from '../specification'
 
 describe("OutputFormat", () => {
@@ -90,6 +90,38 @@ describe("templateOutputs", () => {
       phases: [['in', 'prores.mov']],
       stills: [['still', 'png']],
     })
+  })
+
+})
+
+describe("output enabling", () => {
+
+  const phase = {name: 'in', type: PhaseType.BuildIn, from: 0, to: 10}
+
+  it("enables phases and stills unless switched off", () => {
+    expect(isOutputEnabled(phase)).toBe(true)
+    expect(isOutputEnabled({...phase, enabled: false})).toBe(false)
+    expect(isOutputEnabled({name: 'still', frame: 0, enabled: true})).toBe(true)
+  })
+
+  it("outputs the full animation by default only without phases", () => {
+    expect(isFullOutputEnabled({phases: [], tracks: []})).toBe(true)
+    expect(isFullOutputEnabled({phases: [phase], tracks: []})).toBe(false)
+    expect(isFullOutputEnabled({phases: [phase], tracks: [], full: true})).toBe(true)
+    expect(isFullOutputEnabled({phases: [], tracks: [], full: false})).toBe(false)
+  })
+
+  it("lists disabled outputs as well", () => {
+    const outputs = templateOutputs({
+      phases: [{...phase, enabled: false}],
+      stills: [{name: 'still', frame: 5}],
+      tracks: [{component_id: 'a', prop: AnimProperty.Opacity, keyframes: []}],
+      full:   true,
+    }, {image: OutputFormat.png(), video: OutputFormat.video('prores')})
+
+    expect(outputs.full).toBe(true)
+    expect(outputs.phases.map(it => it.enabled)).toEqual([false])
+    expect(outputs.stills.map(it => it.enabled)).toEqual([true])
   })
 
 })
