@@ -421,11 +421,15 @@ export interface Phase {
   name: string
   from: number
   to: number
+  /** A video format (see `OutputFormat`), overriding the template's. */
+  format?: string
 }
 
 export interface Still {
   name:  string
   frame: number
+  /** An image format (see `OutputFormat`), overriding the template's. */
+  format?: string
 }
 
 export enum PhaseType {

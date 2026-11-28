@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { OutputFormat, OutputKind } from './formats'
 import { AnimProperty, ComponentSpec, Keyframe, Phase, PhaseType, StaggerOrder, Still, TextUnit } from './specification'
 import { INVALID_TIMING_MESSAGE, parseTiming } from './timing'
 
@@ -94,14 +95,23 @@ const paramGroup = z.object({
 const phase: z.ZodType<Phase> = z.object({
   type: z.enum(PhaseType),
   name: z.string().max(64),
-  from: z.number(),
-  to:   z.number(),
+  from:   z.number(),
+  to:     z.number(),
+  format: outputFormat('video').optional(),
 })
 
 const still: z.ZodType<Still> = z.object({
-  name:  z.string().max(64),
-  frame: z.number().int().min(0),
+  name:   z.string().max(64),
+  frame:  z.number().int().min(0),
+  format: outputFormat('image').optional(),
 })
+
+function outputFormat(kind: OutputKind) {
+  return z.string().refine(
+    raw => OutputFormat.tryParse(raw)?.kind === kind,
+    {message: `Invalid ${kind} format`},
+  )
+}
 
 const timing = z.unknown().transform((raw, ctx) => {
   const parsed = parseTiming(raw)
