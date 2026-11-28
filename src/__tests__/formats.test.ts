@@ -1,4 +1,4 @@
-import { OutputFiletype, OutputFormat, templateOutputs } from '../formats'
+import { OutputFiletype, OutputFormat, templateOutputs, videoCodecList } from '../formats'
 import { AnimationsSpec, AnimProperty, PhaseType } from '../specification'
 
 describe("OutputFormat", () => {
@@ -90,6 +90,15 @@ describe("templateOutputs", () => {
       phases: [['in', 'prores.mov']],
       stills: [['still', 'png']],
     })
+  })
+
+})
+
+describe("videoCodecs", () => {
+
+  it("lists each codec once", () => {
+    const ids = videoCodecList.map(it => it.id)
+    expect(ids).toEqual([...new Set(ids)])
   })
 
 })
